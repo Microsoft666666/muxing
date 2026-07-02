@@ -2,6 +2,8 @@
 
 > 每日 5 分钟，睡前复盘，照见自己。
 
+**🔗 访问地址：[https://microsoft666666.github.io/muxing/](https://microsoft666666.github.io/muxing/)**
+
 ---
 
 ## 这是什么？
