@@ -1199,8 +1199,23 @@ textarea::placeholder {
   <header class="app-header">
     <h1>🌙 暮省</h1>
     <p class="subtitle">每日复盘 · 明日计划 · 修行反思</p>
-    <button class="btn btn-small btn-outline" id="resetTodayBtn" title="重置今日数据" style="margin-top:6px;">🔄 重置今日</button>
+    <div id="nicknameArea" style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <span id="nicknameDisplay" style="font-size:0.9rem;color:var(--text-secondary);"></span>
+      <button class="btn btn-small btn-outline" id="setNicknameBtn" style="display:none;">✏️ 设置昵称</button>
+      <button class="btn btn-small btn-outline" id="resetTodayBtn" title="重置今日数据">🔄 重置今日</button>
+    </div>
   </header>
+
+  <!-- Nickname Modal -->
+  <div class="report-overlay" id="nicknameOverlay">
+    <div class="report-modal" style="max-width:400px;text-align:center;padding:32px 24px;">
+      <h2 style="margin-bottom:8px;">👋 欢迎来到暮省</h2>
+      <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:18px;">请输入你的昵称，让我们更亲切地交流</p>
+      <input type="text" id="nicknameInput" placeholder="你的昵称..." maxlength="20" style="text-align:center;font-size:1rem;margin-bottom:16px;">
+      <br>
+      <button class="btn btn-primary" id="nicknameSaveBtn">开始复盘之旅</button>
+    </div>
+  </div>
 
   <!-- Privacy Banner -->
   <div class="privacy-banner" id="privacyBanner">
@@ -1215,6 +1230,7 @@ textarea::placeholder {
     <button class="tab-btn" data-tab="plan">☀️ 明日计划</button>
     <button class="tab-btn" data-tab="reflect">🧘 修行反思</button>
     <button class="tab-btn" data-tab="history">📅 历史记录</button>
+    <button class="tab-btn" data-tab="guide">📖 指南</button>
   </nav>
 
   <!-- Tab 1: 今日复盘 -->
@@ -1407,6 +1423,77 @@ textarea::placeholder {
       <!-- 动态填充 -->
     </div>
   </div>
+
+  <!-- 使用指南 -->
+  <section class="tab-panel" id="panel-guide">
+    <div class="card">
+      <div class="card-title">📖 暮省使用指南</div>
+      <div style="font-size:0.88rem;line-height:1.8;color:var(--text);">
+
+        <h4 style="color:var(--primary);margin:16px 0 8px;">🌙 这是什么？</h4>
+        <p style="color:var(--text-secondary);">「暮省」是一个每日复盘工具，名字取自"暮而省"——晚间反省。睡前 5 分钟，记录今天的完成、学习、反思，规划明天。</p>
+
+        <h4 style="color:var(--primary);margin:16px 0 8px;">✍️ 今日复盘</h4>
+        <p style="color:var(--text-secondary);">默认页面，填写今天的：</p>
+        <ul style="color:var(--text-secondary);margin:6px 0 6px 20px;">
+          <li><strong>今日完成</strong>：自动带过来昨天的「明日计划」，完成的打勾 ✓</li>
+          <li><strong>心情</strong>：选一个 emoji</li>
+          <li><strong>亮点 / 困难 / 学习 / 反思</strong>：简单写几句</li>
+          <li><strong>效率评分 / 休息评分</strong>：点星星，1-5 颗</li>
+        </ul>
+        <p style="color:var(--text-secondary);">填完点 <strong>💾 保存今日</strong>。</p>
+
+        <h4 style="color:var(--primary);margin:16px 0 8px;">☀️ 明日计划</h4>
+        <p style="color:var(--text-secondary);">写下明天最重要的 3 件事 + 其他待办 + 提醒。保存后，明天打开暮省时这些会自动出现在「今日完成」里。</p>
+
+        <h4 style="color:var(--primary);margin:16px 0 8px;">🧘 修行反思</h4>
+        <p style="color:var(--text-secondary);">一条随机语录（道德经/庄子/禅宗）+ 三条修行提醒。写下今天的感悟、困惑、念头观察。可一键复制或导出。</p>
+
+        <h4 style="color:var(--primary);margin:16px 0 8px;">📅 历史记录</h4>
+        <p style="color:var(--text-secondary);">所有日报按日期倒序排列，点击可展开详情。每条记录右边有：</p>
+        <ul style="color:var(--text-secondary);margin:6px 0 6px 20px;">
+          <li><strong>📊 周复盘</strong>：自动生成本周报告（趋势图 + 智能分析）</li>
+          <li><strong>📈 月复盘</strong>：自动生成本月报告</li>
+          <li><strong>🧠 AI 高我深读</strong>：AI 以"高我"视角深度分析你的数据</li>
+        </ul>
+
+        <h4 style="color:var(--primary);margin:16px 0 8px;">🧠 AI 高我深读配置</h4>
+        <p style="color:var(--text-secondary);">首次使用需要配置（仅一次）：</p>
+        <ul style="color:var(--text-secondary);margin:6px 0 6px 20px;">
+          <li>点「⚡ 一键填充 DeepSeek 默认配置」</li>
+          <li>输入 API Key（向分享者获取，或自己注册 platform.deepseek.com）</li>
+          <li>点「保存并开始分析」</li>
+        </ul>
+        <p style="color:var(--text-secondary);">配置存在你的浏览器里，不会上传。之后每次点深读直接出结果。</p>
+
+        <h4 style="color:var(--primary);margin:16px 0 8px;">💾 数据备份与迁移</h4>
+        <ul style="color:var(--text-secondary);margin:6px 0 6px 20px;">
+          <li><strong>💾 备份 JSON</strong>：下载全部数据，建议每周一次</li>
+          <li><strong>📝 导出 Markdown</strong>：导出为 .md 文件，存到笔记软件</li>
+          <li><strong>📂 导入 JSON</strong>：换设备时，旧设备导出 → 新设备导入</li>
+        </ul>
+
+        <h4 style="color:var(--primary);margin:16px 0 8px;">🔒 隐私说明</h4>
+        <ul style="color:var(--text-secondary);margin:6px 0 6px 20px;">
+          <li>所有数据存在你的浏览器 localStorage 中</li>
+          <li>不同人、不同设备完全隔离，互相看不到</li>
+          <li>AI 分析通过加密通道发送给 DeepSeek，仅用于分析</li>
+          <li>清除浏览器缓存会删除数据，请定期备份</li>
+        </ul>
+
+        <h4 style="color:var(--primary);margin:16px 0 8px;">⏰ 日常节奏</h4>
+        <table style="width:100%;color:var(--text-secondary);font-size:0.82rem;margin:8px 0;">
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px 0;">每天睡前</td><td>填今日复盘 + 明日计划（5分钟）</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px 0;">每周日晚</td><td>周复盘 → AI 高我深读（10分钟）</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px 0;">每月最后一天</td><td>月复盘 → AI 高我深读（20分钟）</td></tr>
+          <tr><td style="padding:6px 0;">每周</td><td>备份一次 JSON（10秒）</td></tr>
+        </table>
+
+        <p style="text-align:center;color:var(--text-muted);font-style:italic;margin-top:20px;">"为学日益，为道日损。"<br>暮省不是让你做更多，而是帮你看见什么真正重要。</p>
+
+      </div>
+    </div>
+  </section>
 
   <!-- Footer -->
   <footer class="app-footer">
@@ -2908,6 +2995,38 @@ var App = {
 
     // Load data
     this.loadData();
+
+    // Nickname
+    var nickname = localStorage.getItem('muxing-nickname');
+    if (nickname) {
+      document.getElementById('nicknameDisplay').textContent = '👋 ' + nickname + '，晚安';
+      document.getElementById('setNicknameBtn').style.display = 'inline-flex';
+    } else {
+      document.getElementById('nicknameOverlay').classList.add('active');
+      setTimeout(function() { document.getElementById('nicknameInput').focus(); }, 100);
+    }
+    document.getElementById('nicknameSaveBtn').addEventListener('click', function() {
+      var name = document.getElementById('nicknameInput').value.trim();
+      if (!name) { showToast('请输入昵称', 'error'); return; }
+      localStorage.setItem('muxing-nickname', name);
+      document.getElementById('nicknameDisplay').textContent = '👋 ' + name + '，晚安';
+      document.getElementById('setNicknameBtn').style.display = 'inline-flex';
+      document.getElementById('nicknameOverlay').classList.remove('active');
+      showToast('欢迎，' + name + '！', 'success');
+    });
+    document.getElementById('nicknameInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') document.getElementById('nicknameSaveBtn').click();
+    });
+    document.getElementById('setNicknameBtn').addEventListener('click', function() {
+      var current = localStorage.getItem('muxing-nickname') || '';
+      var name = prompt('修改昵称：', current);
+      if (name && name.trim()) {
+        name = name.trim();
+        localStorage.setItem('muxing-nickname', name);
+        document.getElementById('nicknameDisplay').textContent = '👋 ' + name + '，晚安';
+        showToast('昵称已更新', 'success');
+      }
+    });
 
     // Privacy banner
     var bannerClosed = localStorage.getItem('daily-review-privacy-banner-closed');
