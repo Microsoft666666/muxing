@@ -1,0 +1,3064 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>暮省 · 每日复盘</title>
+<style>
+/* ============================================================
+   CSS Reset & Base
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #1a1a2e;
+  --bg-card: #16213e;
+  --bg-input: #0f3460;
+  --bg-hover: #1a3a6e;
+  --primary: #e94560;
+  --primary-hover: #ff6b81;
+  --accent: #0f3460;
+  --accent-light: #1a4a80;
+  --text: #eee;
+  --text-secondary: #aaa;
+  --text-muted: #777;
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --info: #3498db;
+  --border: rgba(255,255,255,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --transition: 0.2s ease;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+.app-header {
+  text-align: center;
+  padding: 24px 0 12px;
+}
+
+.app-header h1 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.app-header .subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ============================================================
+   Privacy Banner
+   ============================================================ */
+.privacy-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--info);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.privacy-banner .icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.privacy-banner .close-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.privacy-banner .close-btn:hover {
+  color: var(--text);
+}
+
+/* ============================================================
+   Tab Navigation
+   ============================================================ */
+.tab-nav {
+  display: flex;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 4px;
+  margin-bottom: 16px;
+  gap: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 8px;
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--radius) - 4px);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(233,69,96,0.3);
+}
+
+/* ============================================================
+   Tab Content
+   ============================================================ */
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.25s ease;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   Card
+   ============================================================ */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title .required-star {
+  color: var(--primary);
+  font-size: 1rem;
+  margin-left: 2px;
+}
+
+/* ============================================================
+   Form Elements
+   ============================================================ */
+label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+label .required {
+  color: var(--primary);
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color var(--transition);
+  resize: vertical;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(233,69,96,0.15);
+}
+
+textarea {
+  min-height: 80px;
+}
+
+input[type="text"]::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 2px 12px rgba(233,69,96,0.35);
+}
+
+.btn-secondary {
+  background: var(--accent);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: var(--accent-light);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--text-secondary);
+}
+
+.btn-small {
+  padding: 4px 10px;
+  font-size: 0.78rem;
+}
+
+.btn-icon {
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+
+.btn-icon:hover {
+  color: var(--danger);
+  background: rgba(231,76,60,0.1);
+}
+
+.btn-icon.check:hover {
+  color: var(--success);
+  background: rgba(46,204,113,0.1);
+}
+
+.btn-save {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  margin-top: 8px;
+}
+
+/* ============================================================
+   Task List
+   ============================================================ */
+.task-list {
+  list-style: none;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-item .task-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.task-item .task-text {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.task-item .task-text.done {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.task-item .task-delete {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.task-item .task-delete:hover {
+  color: var(--danger);
+  background: rgba(231,76,60,0.1);
+}
+
+.task-add-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.task-add-row input {
+  flex: 1;
+}
+
+.task-add-row .btn {
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Mood Selector
+   ============================================================ */
+.mood-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mood-btn {
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  background: var(--bg-input);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mood-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--text-secondary);
+}
+
+.mood-btn.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  transform: scale(1.1);
+  box-shadow: 0 2px 12px rgba(233,69,96,0.4);
+}
+
+/* ============================================================
+   Star Rating
+   ============================================================ */
+.star-rating {
+  display: flex;
+  gap: 6px;
+}
+
+.star-btn {
+  font-size: 1.6rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: all var(--transition);
+  padding: 2px;
+}
+
+.star-btn:hover {
+  color: var(--warning);
+  transform: scale(1.15);
+}
+
+.star-btn.active {
+  color: var(--warning);
+  text-shadow: 0 0 8px rgba(243,156,18,0.5);
+}
+
+/* ============================================================
+   Tomorrow Plan Inputs
+   ============================================================ */
+.top3-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.top3-inputs input {
+  background: var(--bg-input);
+}
+
+.top3-number {
+  color: var(--primary);
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.other-list {
+  list-style: none;
+  margin-bottom: 10px;
+}
+
+.other-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.other-item .other-text {
+  flex: 1;
+  font-size: 0.88rem;
+}
+
+.other-item .other-delete {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.other-item .other-delete:hover {
+  color: var(--danger);
+}
+
+.other-add-row {
+  display: flex;
+  gap: 8px;
+}
+
+.other-add-row input {
+  flex: 1;
+}
+
+.other-add-row .btn {
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Quote Card
+   ============================================================ */
+.quote-card {
+  background: linear-gradient(135deg, #1a1a3e 0%, #16213e 100%);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.quote-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text);
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.quote-source {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.quote-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.quote-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quote-refresh {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+
+.quote-refresh:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+}
+
+/* ============================================================
+   Reminder Card
+   ============================================================ */
+.reminder-card {
+  background: linear-gradient(135deg, #1a2a1a 0%, #16213e 100%);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--success);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.reminder-card .card-title {
+  color: var(--success);
+  margin-bottom: 6px;
+}
+
+.reminder-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   History Banner
+   ============================================================ */
+.reminder-banner {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.reminder-banner.warning {
+  background: rgba(243,156,18,0.1);
+  border: 1px solid rgba(243,156,18,0.3);
+  color: var(--warning);
+}
+
+.reminder-banner.info {
+  background: rgba(52,152,219,0.1);
+  border: 1px solid rgba(52,152,219,0.3);
+  color: var(--info);
+}
+
+.reminder-banner.danger {
+  background: rgba(231,76,60,0.1);
+  border: 1px solid rgba(231,76,60,0.3);
+  color: var(--danger);
+}
+
+/* ============================================================
+   History List
+   ============================================================ */
+.history-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.history-item:hover {
+  border-color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.history-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.history-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.history-item-date {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.history-item-day {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.history-item-mood {
+  font-size: 1.3rem;
+}
+
+.history-item-stars {
+  color: var(--warning);
+  font-size: 0.85rem;
+}
+
+.history-item-count {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.history-item-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.history-item-detail {
+  display: none;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.history-item-detail.open {
+  display: block;
+}
+
+.detail-section {
+  margin-bottom: 12px;
+}
+
+.detail-section .detail-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.detail-section .detail-value {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.detail-section .detail-list {
+  list-style: none;
+}
+
+.detail-section .detail-list li {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding: 2px 0;
+}
+
+.detail-section .detail-list li::before {
+  content: "• ";
+  color: var(--primary);
+}
+
+/* ============================================================
+   Empty State
+   ============================================================ */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state .empty-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   Toast
+   ============================================================ */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  animation: slideDown 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
+  pointer-events: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.toast.success {
+  background: var(--success);
+  color: #fff;
+}
+
+.toast.error {
+  background: var(--danger);
+  color: #fff;
+}
+
+.toast.info {
+  background: var(--info);
+  color: #fff;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.app-footer {
+  text-align: center;
+  padding: 32px 16px;
+  margin-top: 24px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+  }
+
+  .app-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .tab-btn {
+    font-size: 0.75rem;
+    padding: 8px 6px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .mood-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
+  }
+
+  .star-btn {
+    font-size: 1.4rem;
+  }
+
+  .history-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .history-item-actions {
+    align-self: flex-end;
+  }
+
+  .toast {
+    font-size: 0.8rem;
+    padding: 10px 16px;
+  }
+
+  .quote-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* ============================================================
+   Review Report (Weekly / Monthly)
+   ============================================================ */
+.report-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 20px 0;
+}
+
+.report-overlay.active {
+  display: block;
+}
+
+.report-modal {
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 28px 24px;
+  border: 1px solid var(--border);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.report-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.report-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.report-close:hover { color: var(--text); }
+
+.report-section {
+  margin-bottom: 22px;
+}
+
+.report-section h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Stats grid */
+.report-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.stat-card .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-card .stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Bar chart */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 100px;
+  padding: 10px 0;
+}
+
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bar {
+  width: 100%;
+  max-width: 40px;
+  background: linear-gradient(180deg, var(--primary), var(--accent));
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.4s ease;
+  position: relative;
+}
+
+.bar.rest-bar {
+  background: linear-gradient(180deg, var(--info), var(--accent));
+}
+
+.bar-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.bar-value {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+/* Mood distribution */
+.mood-dist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mood-tag {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Insight cards */
+.insight-card {
+  background: var(--bg-card);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.insight-card.info { border-left-color: var(--info); }
+.insight-card.warning { border-left-color: var(--warning); }
+.insight-card.success { border-left-color: var(--success); }
+
+.insight-card .insight-icon {
+  margin-right: 6px;
+}
+
+/* Day-by-day list */
+.report-day-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.report-day-item {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.82rem;
+}
+
+.report-day-item .day-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.report-day-item .day-date {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.report-day-item .day-detail {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.report-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-ai {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-ai:hover {
+  box-shadow: 0 2px 16px rgba(108,92,231,0.4);
+  transform: translateY(-1px);
+}
+
+.btn-ai:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.ai-result {
+  margin-top: 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid rgba(108,92,231,0.3);
+  font-size: 0.88rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  color: var(--text);
+}
+
+.ai-result h4 {
+  color: #a29bfe;
+  font-size: 0.95rem;
+  margin: 16px 0 8px;
+  font-weight: 700;
+}
+
+.ai-result h4:first-child {
+  margin-top: 0;
+}
+
+.ai-loading {
+  text-align: center;
+  padding: 30px;
+  color: var(--text-secondary);
+}
+
+.ai-loading .spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(108,92,231,0.2);
+  border-top-color: #a29bfe;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ai-config {
+  margin-top: 16px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 18px;
+  border: 1px solid var(--border);
+}
+
+.ai-config label {
+  font-size: 0.8rem;
+}
+
+.ai-config input {
+  font-size: 0.82rem;
+}
+
+.ai-config .config-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- Header -->
+  <header class="app-header">
+    <h1>🌙 暮省</h1>
+    <p class="subtitle">每日复盘 · 明日计划 · 修行反思</p>
+    <button class="btn btn-small btn-outline" id="resetTodayBtn" title="重置今日数据" style="margin-top:6px;">🔄 重置今日</button>
+  </header>
+
+  <!-- Privacy Banner -->
+  <div class="privacy-banner" id="privacyBanner">
+    <span class="icon">🔒</span>
+    <span>你的所有数据保存在本浏览器中，不会上传到任何服务器。不同人/不同设备的数据完全隔离，互不可见。</span>
+    <button class="close-btn" id="closePrivacyBtn">×</button>
+  </div>
+
+  <!-- Tab Navigation -->
+  <nav class="tab-nav" id="tabNav">
+    <button class="tab-btn active" data-tab="review">✍️ 今日复盘</button>
+    <button class="tab-btn" data-tab="plan">☀️ 明日计划</button>
+    <button class="tab-btn" data-tab="reflect">🧘 修行反思</button>
+    <button class="tab-btn" data-tab="history">📅 历史记录</button>
+  </nav>
+
+  <!-- Tab 1: 今日复盘 -->
+  <section class="tab-panel active" id="panel-review">
+    <!-- 今日完成 -->
+    <div class="card">
+      <div class="card-title">✅ 今日完成 <span class="required-star">*</span></div>
+      <div id="taskHint" style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;display:none;"></div>
+      <ul class="task-list" id="taskList"></ul>
+      <div class="task-add-row">
+        <input type="text" id="taskInput" placeholder="添加完成的事项..." maxlength="200">
+        <button class="btn btn-primary btn-small" id="addTaskBtn">+ 添加</button>
+      </div>
+    </div>
+
+    <!-- 心情 -->
+    <div class="card">
+      <div class="card-title">😊 今日心情 <span class="required-star">*</span></div>
+      <div class="mood-grid" id="moodGrid">
+        <button class="mood-btn" data-mood="🥳" title="非常开心">🥳</button>
+        <button class="mood-btn" data-mood="😊" title="开心">😊</button>
+        <button class="mood-btn" data-mood="😐" title="平静">😐</button>
+        <button class="mood-btn" data-mood="😔" title="低落">😔</button>
+        <button class="mood-btn" data-mood="😤" title="烦躁">😤</button>
+        <button class="mood-btn" data-mood="😰" title="焦虑">😰</button>
+        <button class="mood-btn" data-mood="😴" title="疲惫">😴</button>
+        <button class="mood-btn" data-mood="🤔" title="困惑">🤔</button>
+        <button class="mood-btn" data-mood="🙏" title="感恩">🙏</button>
+      </div>
+    </div>
+
+    <!-- 亮点 -->
+    <div class="card">
+      <div class="card-title">🌟 亮点</div>
+      <label>今天最满意的一件事</label>
+      <textarea id="bestThing" placeholder="写下今天最让你满意的一件事..." maxlength="500"></textarea>
+    </div>
+
+    <!-- 困难 -->
+    <div class="card">
+      <div class="card-title">🧗 困难</div>
+      <label>遇到了什么困难？怎么处理的？</label>
+      <textarea id="difficulty" placeholder="描述遇到的困难和你的应对方式..." maxlength="500"></textarea>
+    </div>
+
+    <!-- 学习 -->
+    <div class="card">
+      <div class="card-title">📖 学习</div>
+      <label>今天学到了什么？</label>
+      <textarea id="learning" placeholder="今天学到的新知识、新技能或新感悟..." maxlength="500"></textarea>
+    </div>
+
+    <!-- 反思 -->
+    <div class="card">
+      <div class="card-title">🔄 反思 <span class="required-star" style="color: var(--primary);">*</span></div>
+      <label><span class="required">*</span> 如果重来，会怎么做不同？</label>
+      <textarea id="redoDifferently" placeholder="认真思考：如果今天重新来过，哪些事情你会做得不同？" maxlength="500"></textarea>
+    </div>
+
+    <!-- 效率评分 -->
+    <div class="card">
+      <div class="card-title">⚡ 效率评分 <span class="required-star">*</span></div>
+      <div class="star-rating" id="efficiencyStars">
+        <button class="star-btn" data-value="1">☆</button>
+        <button class="star-btn" data-value="2">☆</button>
+        <button class="star-btn" data-value="3">☆</button>
+        <button class="star-btn" data-value="4">☆</button>
+        <button class="star-btn" data-value="5">☆</button>
+      </div>
+    </div>
+
+    <!-- 休息评分 -->
+    <div class="card">
+      <div class="card-title">😴 休息评分 <span class="required-star">*</span></div>
+      <div class="star-rating" id="restStars">
+        <button class="star-btn" data-value="1">☆</button>
+        <button class="star-btn" data-value="2">☆</button>
+        <button class="star-btn" data-value="3">☆</button>
+        <button class="star-btn" data-value="4">☆</button>
+        <button class="star-btn" data-value="5">☆</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-save" id="saveTodayBtn">💾 保存今日</button>
+  </section>
+
+  <!-- Tab 2: 明日计划 -->
+  <section class="tab-panel" id="panel-plan">
+    <div class="card">
+      <div class="card-title">🎯 核心 3 件事</div>
+      <div class="top3-inputs">
+        <input type="text" id="top3-1" placeholder="最重要的第 1 件事" maxlength="200">
+        <input type="text" id="top3-2" placeholder="最重要的第 2 件事" maxlength="200">
+        <input type="text" id="top3-3" placeholder="最重要的第 3 件事" maxlength="200">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 其他待办</div>
+      <ul class="other-list" id="otherList"></ul>
+      <div class="other-add-row">
+        <input type="text" id="otherInput" placeholder="添加其他待办..." maxlength="200">
+        <button class="btn btn-primary btn-small" id="addOtherBtn">+ 添加</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⏰ 提醒</div>
+      <textarea id="tomorrowReminder" placeholder="明天的提醒事项或注意事项..." maxlength="300"></textarea>
+    </div>
+
+    <button class="btn btn-primary btn-save" id="savePlanBtn">💾 保存</button>
+  </section>
+
+  <!-- Tab 3: 修行反思 -->
+  <section class="tab-panel" id="panel-reflect">
+    <!-- 随机语录 -->
+    <div class="quote-card" id="quoteCard">
+      <div class="quote-header">
+        <span class="quote-label">📜 今日语录</span>
+        <button class="quote-refresh" id="refreshQuoteBtn" title="换一条">🔄</button>
+      </div>
+      <div class="quote-text" id="quoteText"></div>
+      <div class="quote-source" id="quoteSource"></div>
+    </div>
+
+    <!-- 修行感悟 -->
+    <div class="card">
+      <div class="card-title">🧘 今日修行感悟</div>
+      <textarea id="reflectionFeeling" placeholder="今天的心得、感受、发生的事件..." maxlength="1000"></textarea>
+    </div>
+
+    <!-- 情绪困惑 -->
+    <div class="card">
+      <div class="card-title">💭 情绪困惑</div>
+      <label>什么让你动摇？什么念头反复出现？</label>
+      <textarea id="reflectionConfusion" placeholder="坦诚面对自己的内心..." maxlength="500"></textarea>
+    </div>
+
+    <!-- 念头观察 -->
+    <div class="card">
+      <div class="card-title">👁️ 念头观察</div>
+      <label>观察一个具体念头的来龙去脉（选填）</label>
+      <textarea id="reflectionThought" placeholder="像一个旁观者，观察念头的升起、停留和消散..." maxlength="500"></textarea>
+    </div>
+
+    <!-- 修行提醒卡片 -->
+    <div class="reminder-card" id="reminderCard">
+      <div class="card-title">🌿 修行提醒 · 三则</div>
+      <div id="reminderList"></div>
+    </div>
+
+    <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+      <button class="btn btn-outline" id="copyReflectBtn">📋 一键复制</button>
+      <button class="btn btn-outline" id="exportReflectBtn">📄 一键导出</button>
+    </div>
+
+    <button class="btn btn-primary btn-save" id="saveReflectBtn">💾 保存</button>
+  </section>
+
+  <!-- Tab 4: 历史记录 -->
+  <section class="tab-panel" id="panel-history">
+    <!-- 提醒横幅 -->
+    <div id="historyBanners"></div>
+
+    <!-- 工具栏 -->
+    <div class="history-toolbar">
+      <button class="btn btn-secondary btn-small" id="backupBtn">💾 备份 JSON</button>
+      <button class="btn btn-secondary btn-small" id="importBtn">📂 导入 JSON</button>
+      <button class="btn btn-secondary btn-small" id="exportMdBtn">📝 导出 Markdown</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    </div>
+
+    <!-- 备份提醒 -->
+    <div id="backupReminder" style="display:none;"></div>
+
+    <!-- 日报列表 -->
+    <div class="history-list" id="historyList">
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>还没有任何记录</h3>
+        <p>在「今日复盘」标签页填写你的第一次复盘，<br>开始建立你的成长档案。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 报告弹窗 -->
+  <div class="report-overlay" id="reportOverlay">
+    <div class="report-modal" id="reportModal">
+      <!-- 动态填充 -->
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    🔒 你的所有数据保存在本浏览器中，不会上传到任何服务器。<br>
+    不同人/不同设备的数据完全隔离，互不可见。
+  </footer>
+
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   Quote Library (50+ quotes)
+   ============================================================ */
+const QUOTES = [
+  // 道德经 (~20)
+  { text: "上善若水。水善利万物而不争，处众人之所恶，故几于道。", source: "《道德经》第八章" },
+  { text: "为学日益，为道日损。损之又损，以至于无为。", source: "《道德经》第四十八章" },
+  { text: "知人者智，自知者明。胜人者有力，自胜者强。", source: "《道德经》第三十三章" },
+  { text: "大直若屈，大巧若拙，大辩若讷。", source: "《道德经》第四十五章" },
+  { text: "祸兮福之所倚，福兮祸之所伏。", source: "《道德经》第五十八章" },
+  { text: "合抱之木，生于毫末；九层之台，起于累土；千里之行，始于足下。", source: "《道德经》第六十四章" },
+  { text: "天下难事，必作于易；天下大事，必作于细。", source: "《道德经》第六十三章" },
+  { text: "知足不辱，知止不殆，可以长久。", source: "《道德经》第四十四章" },
+  { text: "信言不美，美言不信。善者不辩，辩者不善。", source: "《道德经》第八十一章" },
+  { text: "致虚极，守静笃。万物并作，吾以观复。", source: "《道德经》第十六章" },
+  { text: "道常无为而无不为。", source: "《道德经》第三十七章" },
+  { text: "大方无隅，大器晚成，大音希声，大象无形。", source: "《道德经》第四十一章" },
+  { text: "曲则全，枉则直，洼则盈，敝则新。", source: "《道德经》第二十二章" },
+  { text: "知者不言，言者不知。", source: "《道德经》第五十六章" },
+  { text: "圣人无常心，以百姓心为心。", source: "《道德经》第四十九章" },
+  { text: "天之道，利而不害；圣人之道，为而不争。", source: "《道德经》第八十一章" },
+  { text: "知不知，尚矣；不知知，病也。", source: "《道德经》第七十一章" },
+  { text: "柔胜刚，弱胜强。", source: "《道德经》第三十六章" },
+  { text: "大音希声，大象无形。", source: "《道德经》第四十一章" },
+  { text: "道生一，一生二，二生三，三生万物。", source: "《道德经》第四十二章" },
+  // 庄子 (~15)
+  { text: "天地与我并生，而万物与我为一。", source: "《庄子·齐物论》" },
+  { text: "举世誉之而不加劝，举世非之而不加沮。", source: "《庄子·逍遥游》" },
+  { text: "吾生也有涯，而知也无涯。以有涯随无涯，殆已！", source: "《庄子·养生主》" },
+  { text: "相濡以沫，不如相忘于江湖。", source: "《庄子·大宗师》" },
+  { text: "至人无己，神人无功，圣人无名。", source: "《庄子·逍遥游》" },
+  { text: "知其不可奈何而安之若命，德之至也。", source: "《庄子·人间世》" },
+  { text: "井蛙不可以语于海者，拘于虚也；夏虫不可以语于冰者，笃于时也。", source: "《庄子·秋水》" },
+  { text: "大知闲闲，小知间间；大言炎炎，小言詹詹。", source: "《庄子·齐物论》" },
+  { text: "夫大块载我以形，劳我以生，佚我以老，息我以死。", source: "《庄子·大宗师》" },
+  { text: "人皆知有用之用，而莫知无用之用也。", source: "《庄子·人间世》" },
+  { text: "道隐于小成，言隐于荣华。", source: "《庄子·齐物论》" },
+  { text: "独与天地精神往来，而不敖倪于万物。", source: "《庄子·天下》" },
+  { text: "朴素而天下莫能与之争美。", source: "《庄子·天道》" },
+  { text: "哀莫大于心死，而人死亦次之。", source: "《庄子·田子方》" },
+  { text: "真者，精诚之至也。不精不诚，不能动人。", source: "《庄子·渔父》" },
+  // 禅宗/佛经 (~10)
+  { text: "菩提本无树，明镜亦非台。本来无一物，何处惹尘埃。", source: "惠能《坛经》" },
+  { text: "一切有为法，如梦幻泡影，如露亦如电，应作如是观。", source: "《金刚经》" },
+  { text: "应无所住而生其心。", source: "《金刚经》" },
+  { text: "色不异空，空不异色；色即是空，空即是色。", source: "《心经》" },
+  { text: "过去心不可得，现在心不可得，未来心不可得。", source: "《金刚经》" },
+  { text: "不是风动，不是幡动，仁者心动。", source: "《坛经》" },
+  { text: "凡所有相，皆是虚妄。若见诸相非相，则见如来。", source: "《金刚经》" },
+  { text: "平常心是道。", source: "马祖道一" },
+  { text: "一花一世界，一叶一如来。", source: "《华严经》" },
+  { text: "见山是山，见水是水。见山不是山，见水不是水。见山还是山，见水还是水。", source: "青原惟信禅师" },
+];
+
+const REMINDERS = [
+  "今天你有没有一刻，真正地停下来，只是呼吸？",
+  "不评判，只是观察。念头来了，让它来；念头走了，让它走。",
+  "你不需要成为更好的自己，你只需要更真实地成为自己。",
+  "放下对完美的执着，拥抱此刻的完整。",
+  "每一次呼吸，都是新的开始。",
+  "烦恼即菩提。困难不是障碍，是道路。",
+  "不用急着改变什么，先学会看见什么。",
+  "真正的力量，来自于允许一切如其所是。",
+  "修行不在蒲团上，在每一个起心动念之间。",
+  "别忘了对自己慈悲。",
+];
+
+/* ============================================================
+   Utility Functions
+   ============================================================ */
+function getDateString(date) {
+  const d = date || new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function getDayOfWeek(dateStr) {
+  const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  const d = new Date(dateStr);
+  return days[d.getDay()];
+}
+
+function getYesterdayDate() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return getDateString(d);
+}
+
+function getWeekStart(dateStr) {
+  const d = new Date(dateStr);
+  const day = d.getDay();
+  const diff = day === 0 ? 6 : day - 1;
+  d.setDate(d.getDate() - diff);
+  return getDateString(d);
+}
+
+function getMonthStr(dateStr) {
+  return dateStr.substring(0, 7);
+}
+
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ============================================================
+   Toast
+   ============================================================ */
+function showToast(message, type) {
+  type = type || 'info';
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(function() {
+    if (toast.parentNode) {
+      toast.parentNode.removeChild(toast);
+    }
+  }, 2000);
+}
+
+/* ============================================================
+   App Object
+   ============================================================ */
+var App = {
+  data: {},
+  today: getDateString(),
+
+  /* --- Data Operations --- */
+  loadData: function() {
+    try {
+      var raw = localStorage.getItem('daily-review-data');
+      this.data = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      this.data = {};
+      showToast('数据加载失败，已重置', 'error');
+    }
+  },
+
+  saveData: function() {
+    try {
+      localStorage.setItem('daily-review-data', JSON.stringify(this.data));
+      showToast('✅ 已保存', 'success');
+    } catch (e) {
+      showToast('保存失败，请检查存储空间', 'error');
+    }
+  },
+
+  getTodayData: function() {
+    if (!this.data[this.today]) {
+      // 尝试从昨天的明日计划中继承任务
+      var inheritedTasks = [];
+      var hasYesterdayPlan = false;
+      var yesterday = getYesterdayDate();
+      var yesterdayData = this.data[yesterday];
+      if (yesterdayData) {
+        // 继承核心 3 件事
+        if (yesterdayData.tomorrowTop3) {
+          yesterdayData.tomorrowTop3.forEach(function(item) {
+            if (item && item.trim()) {
+              inheritedTasks.push({ text: item.trim(), done: false });
+              hasYesterdayPlan = true;
+            }
+          });
+        }
+        // 继承其他待办
+        if (yesterdayData.tomorrowOthers) {
+          yesterdayData.tomorrowOthers.forEach(function(item) {
+            if (item && item.trim()) {
+              inheritedTasks.push({ text: item.trim(), done: false });
+              hasYesterdayPlan = true;
+            }
+          });
+        }
+      }
+      this.data[this.today] = {
+        mood: '',
+        tasks: inheritedTasks,
+        _hasYesterdayPlan: hasYesterdayPlan,
+        bestThing: '',
+        difficulty: '',
+        learning: '',
+        redoDifferently: '',
+        efficiency: 0,
+        rest: 0,
+        tomorrowTop3: ['', '', ''],
+        tomorrowOthers: [],
+        tomorrowReminder: '',
+        reflectionFeeling: '',
+        reflectionConfusion: '',
+        reflectionThought: ''
+      };
+    }
+    return this.data[this.today];
+  },
+
+  /* --- Tab Switching --- */
+  switchTab: function(tabName) {
+    var panels = document.querySelectorAll('.tab-panel');
+    var btns = document.querySelectorAll('.tab-btn');
+    panels.forEach(function(p) { p.classList.remove('active'); });
+    btns.forEach(function(b) { b.classList.remove('active'); });
+    var panel = document.getElementById('panel-' + tabName);
+    var btn = document.querySelector('[data-tab="' + tabName + '"]');
+    if (panel) panel.classList.add('active');
+    if (btn) btn.classList.add('active');
+
+    if (tabName === 'history') {
+      App.renderHistory();
+    }
+    if (tabName === 'plan') {
+      App.renderPlan();
+    }
+    if (tabName === 'reflect') {
+      App.renderReflect();
+    }
+  },
+
+  /* --- Review Tab --- */
+  renderReview: function() {
+    var d = this.getTodayData();
+    // Tasks
+    this.renderTaskList(d);
+    // Task hint - show source of inherited tasks
+    var hint = document.getElementById('taskHint');
+    var yesterday = getYesterdayDate();
+    var yesterdayData = this.data[yesterday];
+    var hasYesterdayContent = yesterdayData && (
+      (yesterdayData.tomorrowTop3 && yesterdayData.tomorrowTop3.some(function(x){return x && x.trim();})) ||
+      (yesterdayData.tomorrowOthers && yesterdayData.tomorrowOthers.some(function(x){return x && x.trim();}))
+    );
+    if (hasYesterdayContent) {
+      hint.style.display = 'block';
+      hint.style.color = 'var(--info)';
+      hint.innerHTML = '📋 以上任务来自昨天的「明日计划」，完成后打勾 ✓';
+    } else {
+      hint.style.display = 'block';
+      hint.style.color = 'var(--text-muted)';
+      hint.innerHTML = '💤 昨天没有写明日计划，请在下方添加今日完成的事项';
+    }
+    // Mood
+    var moodBtns = document.querySelectorAll('#moodGrid .mood-btn');
+    moodBtns.forEach(function(btn) {
+      btn.classList.toggle('selected', btn.getAttribute('data-mood') === d.mood);
+    });
+    // Textareas
+    document.getElementById('bestThing').value = d.bestThing || '';
+    document.getElementById('difficulty').value = d.difficulty || '';
+    document.getElementById('learning').value = d.learning || '';
+    document.getElementById('redoDifferently').value = d.redoDifferently || '';
+    // Stars - force number, 0 means none selected
+    this.renderStars('efficiencyStars', Number(d.efficiency) || 0);
+    this.renderStars('restStars', Number(d.rest) || 0);
+  },
+
+  renderTaskList: function(d) {
+    var list = document.getElementById('taskList');
+    list.innerHTML = '';
+    if (d.tasks.length === 0) {
+      var empty = document.createElement('li');
+      empty.style.cssText = 'color: var(--text-muted); font-size: 0.85rem; padding: 12px 0; text-align: center;';
+      empty.textContent = '还没有记录完成的事项';
+      list.appendChild(empty);
+      return;
+    }
+    d.tasks.forEach(function(task, index) {
+      var li = document.createElement('li');
+      li.className = 'task-item';
+
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'task-checkbox';
+      cb.checked = task.done;
+      cb.addEventListener('change', function() {
+        task.done = cb.checked;
+        App.renderTaskList(d);
+      });
+
+      var span = document.createElement('span');
+      span.className = 'task-text' + (task.done ? ' done' : '');
+      span.textContent = task.text;
+
+      var del = document.createElement('button');
+      del.className = 'task-delete';
+      del.textContent = '×';
+      del.title = '删除';
+      del.addEventListener('click', function() {
+        d.tasks.splice(index, 1);
+        App.renderTaskList(d);
+      });
+
+      li.appendChild(cb);
+      li.appendChild(span);
+      li.appendChild(del);
+      list.appendChild(li);
+    });
+  },
+
+  renderStars: function(containerId, value) {
+    var container = document.getElementById(containerId);
+    var btns = container.querySelectorAll('.star-btn');
+    btns.forEach(function(btn) {
+      var v = parseInt(btn.getAttribute('data-value'));
+      var active = v <= value;
+      btn.classList.toggle('active', active);
+      btn.textContent = active ? '★' : '☆';
+    });
+  },
+
+  collectReviewData: function() {
+    var d = this.getTodayData();
+    d.tasks = d.tasks; // already mutated in place
+    d.bestThing = document.getElementById('bestThing').value.trim();
+    d.difficulty = document.getElementById('difficulty').value.trim();
+    d.learning = document.getElementById('learning').value.trim();
+    d.redoDifferently = document.getElementById('redoDifferently').value.trim();
+    return d;
+  },
+
+  validateReview: function() {
+    var d = this.getTodayData();
+    var errors = [];
+    if (!d.mood) errors.push('请选择今日心情');
+    if (!d.redoDifferently || !d.redoDifferently.trim()) errors.push('请填写反思（必填）');
+    if (!d.efficiency || d.efficiency === 0) errors.push('请选择效率评分');
+    if (!d.rest || d.rest === 0) errors.push('请选择休息评分');
+    if (errors.length > 0) {
+      showToast(errors[0], 'error');
+      return false;
+    }
+    return true;
+  },
+
+  /* --- Plan Tab --- */
+  renderPlan: function() {
+    var d = this.getTodayData();
+    document.getElementById('top3-1').value = (d.tomorrowTop3 && d.tomorrowTop3[0]) || '';
+    document.getElementById('top3-2').value = (d.tomorrowTop3 && d.tomorrowTop3[1]) || '';
+    document.getElementById('top3-3').value = (d.tomorrowTop3 && d.tomorrowTop3[2]) || '';
+    document.getElementById('tomorrowReminder').value = d.tomorrowReminder || '';
+    this.renderOtherList(d);
+  },
+
+  renderOtherList: function(d) {
+    var list = document.getElementById('otherList');
+    list.innerHTML = '';
+    if (!d.tomorrowOthers) d.tomorrowOthers = [];
+    d.tomorrowOthers.forEach(function(item, index) {
+      var li = document.createElement('li');
+      li.className = 'other-item';
+
+      var span = document.createElement('span');
+      span.className = 'other-text';
+      span.textContent = item;
+
+      var del = document.createElement('button');
+      del.className = 'other-delete';
+      del.textContent = '×';
+      del.title = '删除';
+      del.addEventListener('click', function() {
+        d.tomorrowOthers.splice(index, 1);
+        App.renderOtherList(d);
+      });
+
+      li.appendChild(span);
+      li.appendChild(del);
+      list.appendChild(li);
+    });
+  },
+
+  collectPlanData: function() {
+    var d = this.getTodayData();
+    d.tomorrowTop3 = [
+      document.getElementById('top3-1').value.trim(),
+      document.getElementById('top3-2').value.trim(),
+      document.getElementById('top3-3').value.trim()
+    ];
+    d.tomorrowReminder = document.getElementById('tomorrowReminder').value.trim();
+    return d;
+  },
+
+  /* --- Reflect Tab --- */
+  renderRandomQuote: function() {
+    var idx = Math.floor(Math.random() * QUOTES.length);
+    var quote = QUOTES[idx];
+    document.getElementById('quoteText').textContent = '「' + quote.text + '」';
+    document.getElementById('quoteSource').textContent = '—— ' + quote.source;
+  },
+
+  renderRandomReminder: function() {
+    // Pick 3 random non-duplicate reminders
+    var indices = [];
+    while (indices.length < 3 && indices.length < REMINDERS.length) {
+      var idx = Math.floor(Math.random() * REMINDERS.length);
+      if (indices.indexOf(idx) < 0) indices.push(idx);
+    }
+    var container = document.getElementById('reminderList');
+    container.innerHTML = '';
+    indices.forEach(function(idx, i) {
+      var p = document.createElement('p');
+      p.textContent = REMINDERS[idx];
+      p.style.cssText = 'padding: 8px 0;' + (i > 0 ? 'border-top: 1px solid var(--border);margin-top:6px;' : '');
+      container.appendChild(p);
+    });
+  },
+
+  renderReflect: function() {
+    var d = this.getTodayData();
+    document.getElementById('reflectionFeeling').value = d.reflectionFeeling || '';
+    document.getElementById('reflectionConfusion').value = d.reflectionConfusion || '';
+    document.getElementById('reflectionThought').value = d.reflectionThought || '';
+    this.renderRandomQuote();
+    this.renderRandomReminder();
+  },
+
+  collectReflectData: function() {
+    var d = this.getTodayData();
+    d.reflectionFeeling = document.getElementById('reflectionFeeling').value.trim();
+    d.reflectionConfusion = document.getElementById('reflectionConfusion').value.trim();
+    d.reflectionThought = document.getElementById('reflectionThought').value.trim();
+    return d;
+  },
+
+  getReflectText: function() {
+    var d = this.getTodayData();
+    var lines = [];
+    lines.push('🧘 修行反思 - ' + this.today);
+    lines.push('');
+    if (d.reflectionFeeling) {
+      lines.push('【今日修行感悟】');
+      lines.push(d.reflectionFeeling);
+      lines.push('');
+    }
+    if (d.reflectionConfusion) {
+      lines.push('【情绪困惑】');
+      lines.push(d.reflectionConfusion);
+      lines.push('');
+    }
+    if (d.reflectionThought) {
+      lines.push('【念头观察】');
+      lines.push(d.reflectionThought);
+      lines.push('');
+    }
+    return lines.join('\n');
+  },
+
+  /* --- History Tab --- */
+  getSortedDates: function() {
+    return Object.keys(this.data).sort().reverse();
+  },
+
+  getConsecutiveMissedDays: function() {
+    var sorted = this.getSortedDates();
+    if (sorted.length === 0) return 0;
+    var lastDate = new Date(sorted[0]);
+    var todayDate = new Date(this.today);
+    var missed = 0;
+    var check = new Date(todayDate);
+    // Check backwards from today (excluding today)
+    check.setDate(check.getDate() - 1);
+    while (getDateString(check) > sorted[0]) {
+      missed++;
+      check.setDate(check.getDate() - 1);
+      if (missed > 30) break;
+    }
+    return missed;
+  },
+
+  getEfficiencyTrend: function() {
+    var sorted = this.getSortedDates();
+    if (sorted.length < 3) return null;
+    var last3 = [];
+    for (var i = 0; i < Math.min(3, sorted.length); i++) {
+      var d = this.data[sorted[i]];
+      if (d.efficiency && d.efficiency > 0) {
+        last3.push(d.efficiency);
+      }
+    }
+    if (last3.length < 3) return null;
+    // Check if strictly decreasing
+    return last3[0] < last3[1] && last3[1] < last3[2];
+  },
+
+  renderHistoryBanners: function() {
+    var container = document.getElementById('historyBanners');
+    container.innerHTML = '';
+    var sorted = this.getSortedDates();
+
+    // Consecutive missed days
+    var missed = this.getConsecutiveMissedDays();
+    if (missed >= 3) {
+      var banner = document.createElement('div');
+      banner.className = 'reminder-banner warning';
+      banner.innerHTML = '<span>⚠️</span> 已经 <strong>' + missed + '</strong> 天没写复盘了，快速 catch up？';
+      container.appendChild(banner);
+    }
+
+    // Sunday check
+    if (new Date().getDay() === 0 && sorted.length > 0) {
+      var banner = document.createElement('div');
+      banner.className = 'reminder-banner info';
+      banner.innerHTML = '<span>📅</span> 本周数据已就绪，要做周复盘吗？';
+      container.appendChild(banner);
+    }
+
+    // End of month check
+    var d = new Date();
+    var lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    if (d.getDate() === lastDay && sorted.length > 0) {
+      var banner = document.createElement('div');
+      banner.className = 'reminder-banner info';
+      banner.innerHTML = '<span>📅</span> 本月数据已就绪，要做月复盘吗？';
+      container.appendChild(banner);
+    }
+
+    // Efficiency declining
+    if (this.getEfficiencyTrend()) {
+      var banner = document.createElement('div');
+      banner.className = 'reminder-banner danger';
+      banner.innerHTML = '<span>📉</span> 注意到效率连续下降，想聊聊吗？';
+      container.appendChild(banner);
+    }
+  },
+
+  renderHistory: function() {
+    this.renderHistoryBanners();
+    this.checkBackupReminder();
+    var container = document.getElementById('historyList');
+    var sorted = this.getSortedDates();
+
+    if (sorted.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><h3>还没有任何记录</h3><p>在「今日复盘」标签页填写你的第一次复盘，<br>开始建立你的成长档案。</p></div>';
+      return;
+    }
+
+    var html = '';
+    sorted.forEach(function(dateStr) {
+      var d = App.data[dateStr];
+      var tasksDone = d.tasks ? d.tasks.filter(function(t) { return t.done; }).length : 0;
+      var tasksTotal = d.tasks ? d.tasks.length : 0;
+      var starsStr = d.efficiency ? '⭐'.repeat(d.efficiency) : '';
+      var mood = d.mood || '';
+
+      html += '<div class="history-item" data-date="' + dateStr + '">';
+      html += '<div class="history-item-header">';
+      html += '<div class="history-item-left">';
+      html += '<span class="history-item-date">' + dateStr + '</span>';
+      html += '<span class="history-item-day">' + getDayOfWeek(dateStr) + '</span>';
+      html += '<span class="history-item-mood">' + mood + '</span>';
+      html += '<span class="history-item-stars">' + starsStr + '</span>';
+      html += '<span class="history-item-count">' + tasksDone + '/' + tasksTotal + ' 项完成</span>';
+      html += '</div>';
+      html += '<div class="history-item-actions">';
+      html += '<button class="btn btn-outline btn-small btn-weekly" data-date="' + dateStr + '">📊 周复盘</button>';
+      html += '<button class="btn btn-outline btn-small btn-monthly" data-date="' + dateStr + '">📈 月复盘</button>';
+      html += '</div>';
+      html += '</div>';
+
+      // Detail section
+      html += '<div class="history-item-detail" id="detail-' + dateStr + '">';
+      if (d.bestThing) {
+        html += '<div class="detail-section"><div class="detail-label">🌟 亮点</div><div class="detail-value">' + escapeHTML(d.bestThing) + '</div></div>';
+      }
+      if (d.difficulty) {
+        html += '<div class="detail-section"><div class="detail-label">🧗 困难</div><div class="detail-value">' + escapeHTML(d.difficulty) + '</div></div>';
+      }
+      if (d.learning) {
+        html += '<div class="detail-section"><div class="detail-label">📖 学习</div><div class="detail-value">' + escapeHTML(d.learning) + '</div></div>';
+      }
+      if (d.redoDifferently) {
+        html += '<div class="detail-section"><div class="detail-label">🔄 反思</div><div class="detail-value">' + escapeHTML(d.redoDifferently) + '</div></div>';
+      }
+      if (d.tasks && d.tasks.length > 0) {
+        html += '<div class="detail-section"><div class="detail-label">✅ 完成事项</div><ul class="detail-list">';
+        d.tasks.forEach(function(t) {
+          html += '<li>' + (t.done ? '✓ ' : '○ ') + escapeHTML(t.text) + '</li>';
+        });
+        html += '</ul></div>';
+      }
+      if (d.rest && d.rest > 0) {
+        html += '<div class="detail-section"><div class="detail-label">😴 休息评分</div><div class="detail-value">' + '⭐'.repeat(d.rest) + '</div></div>';
+      }
+      if (d.tomorrowTop3 && d.tomorrowTop3.some(function(x) { return x; })) {
+        html += '<div class="detail-section"><div class="detail-label">🎯 明日核心 3 件事</div><ul class="detail-list">';
+        d.tomorrowTop3.forEach(function(item, idx) {
+          if (item) html += '<li>' + escapeHTML(item) + '</li>';
+        });
+        html += '</ul></div>';
+      }
+      if (d.tomorrowOthers && d.tomorrowOthers.length > 0) {
+        html += '<div class="detail-section"><div class="detail-label">📋 其他待办</div><ul class="detail-list">';
+        d.tomorrowOthers.forEach(function(item) {
+          html += '<li>' + escapeHTML(item) + '</li>';
+        });
+        html += '</ul></div>';
+      }
+      if (d.tomorrowReminder) {
+        html += '<div class="detail-section"><div class="detail-label">⏰ 提醒</div><div class="detail-value">' + escapeHTML(d.tomorrowReminder) + '</div></div>';
+      }
+      if (d.reflectionFeeling) {
+        html += '<div class="detail-section"><div class="detail-label">🧘 修行感悟</div><div class="detail-value">' + escapeHTML(d.reflectionFeeling) + '</div></div>';
+      }
+      if (d.reflectionConfusion) {
+        html += '<div class="detail-section"><div class="detail-label">💭 情绪困惑</div><div class="detail-value">' + escapeHTML(d.reflectionConfusion) + '</div></div>';
+      }
+      if (d.reflectionThought) {
+        html += '<div class="detail-section"><div class="detail-label">👁️ 念头观察</div><div class="detail-value">' + escapeHTML(d.reflectionThought) + '</div></div>';
+      }
+      html += '</div>';
+      html += '</div>';
+    });
+
+    container.innerHTML = html;
+
+    // Bind click events for expand/collapse
+    container.querySelectorAll('.history-item').forEach(function(item) {
+      var dateStr = item.getAttribute('data-date');
+      item.addEventListener('click', function(e) {
+        // Don't toggle if clicking action buttons
+        if (e.target.closest('.btn-weekly') || e.target.closest('.btn-monthly')) {
+          return;
+        }
+        var detail = document.getElementById('detail-' + dateStr);
+        detail.classList.toggle('open');
+      });
+    });
+
+    // Bind weekly/monthly buttons
+    container.querySelectorAll('.btn-weekly').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var dateStr = btn.getAttribute('data-date');
+        App.doWeeklyReview(dateStr);
+      });
+    });
+
+    container.querySelectorAll('.btn-monthly').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var dateStr = btn.getAttribute('data-date');
+        App.doMonthlyReview(dateStr);
+      });
+    });
+  },
+
+  /* --- Weekly Review --- */
+  doWeeklyReview: function(dateStr) {
+    var weekStart = getWeekStart(dateStr);
+    var weekStartDate = new Date(weekStart);
+    var weekDates = [];
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(weekStartDate);
+      d.setDate(d.getDate() + i);
+      weekDates.push(getDateString(d));
+    }
+    this.generateReport(weekDates, '周复盘', weekStart + ' ~ ' + weekDates[6]);
+  },
+
+  /* --- Monthly Review --- */
+  doMonthlyReview: function(dateStr) {
+    var monthStr = getMonthStr(dateStr);
+    var allDates = this.getSortedDates();
+    var monthDates = allDates.filter(function(d) {
+      return d.startsWith(monthStr);
+    }).sort();
+    var d = new Date(monthStr + '-01');
+    var monthName = d.getFullYear() + '年' + (d.getMonth() + 1) + '月';
+    this.generateReport(monthDates, '月复盘', monthName);
+  },
+
+  /* --- Core: Generate Analysis Report --- */
+  generateReport: function(dates, title, subtitle) {
+    var recordedDates = dates.filter(function(d) { return !!this.data[d]; }, this);
+    if (recordedDates.length === 0) {
+      showToast('该时段还没有记录数据', 'error');
+      return;
+    }
+
+    // Collect data
+    var entries = recordedDates.map(function(d) { return this.data[d]; }, this);
+    var effValues = entries.map(function(e) { return e.efficiency || 0; }).filter(function(v) { return v > 0; });
+    var restValues = entries.map(function(e) { return e.rest || 0; }).filter(function(v) { return v > 0; });
+    var moodCounts = {};
+    entries.forEach(function(e) { if (e.mood) moodCounts[e.mood] = (moodCounts[e.mood] || 0) + 1; });
+    var totalTasks = 0, doneTasks = 0;
+    entries.forEach(function(e) {
+      if (e.tasks) {
+        totalTasks += e.tasks.length;
+        doneTasks += e.tasks.filter(function(t) { return t.done; }).length;
+      }
+    });
+
+    var avgEff = effValues.length ? (effValues.reduce(function(a,b){return a+b;},0) / effValues.length) : 0;
+    var avgRest = restValues.length ? (restValues.reduce(function(a,b){return a+b;},0) / restValues.length) : 0;
+    var completionRate = totalTasks > 0 ? Math.round(doneTasks / totalTasks * 100) : 0;
+
+    // Build HTML report
+    var html = '';
+    html += '<div class="report-header">';
+    html += '<div><h2>📊 ' + title + '</h2><p style="font-size:0.8rem;color:var(--text-secondary);margin-top:2px;">' + subtitle + ' · ' + recordedDates.length + ' 天记录</p></div>';
+    html += '<button class="report-close" id="reportCloseBtn">×</button>';
+    html += '</div>';
+
+    // Section 1: Stats Summary
+    html += '<div class="report-section">';
+    html += '<h3>数据摘要</h3>';
+    html += '<div class="report-stats">';
+    html += '<div class="stat-card"><div class="stat-value">' + recordedDates.length + '</div><div class="stat-label">记录天数</div></div>';
+    html += '<div class="stat-card"><div class="stat-value">' + avgEff.toFixed(1) + '</div><div class="stat-label">平均效率 /5</div></div>';
+    html += '<div class="stat-card"><div class="stat-value">' + avgRest.toFixed(1) + '</div><div class="stat-label">平均休息 /5</div></div>';
+    html += '<div class="stat-card"><div class="stat-value">' + completionRate + '%</div><div class="stat-label">任务完成率</div></div>';
+    html += '</div></div>';
+
+    // Section 2: Efficiency & Rest Trend Chart
+    html += '<div class="report-section">';
+    html += '<h3>效率与休息趋势</h3>';
+    html += '<div class="bar-chart">';
+    recordedDates.forEach(function(dateStr, idx) {
+      var e = this.data[dateStr];
+      var eff = e.efficiency || 0;
+      var rest = e.rest || 0;
+      var dayLabel = dateStr.substring(5);
+      html += '<div class="bar-col">';
+      html += '<div class="bar-value">' + (eff || '-') + '</div>';
+      html += '<div class="bar" style="height:' + (eff * 20) + '%;" title="效率:' + eff + '"></div>';
+      html += '<div class="bar rest-bar" style="height:' + (rest * 20) + '%;" title="休息:' + rest + '"></div>';
+      html += '<div class="bar-label">' + dayLabel + '</div>';
+      html += '</div>';
+    }, this);
+    html += '</div>';
+    html += '<div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">🔴 效率 &nbsp; 🔵 休息</div>';
+    html += '</div>';
+
+    // Section 3: Mood Distribution
+    var moodKeys = Object.keys(moodCounts);
+    if (moodKeys.length > 0) {
+      html += '<div class="report-section">';
+      html += '<h3>心情分布</h3>';
+      html += '<div class="mood-dist">';
+      moodKeys.sort(function(a,b) { return moodCounts[b] - moodCounts[a]; });
+      moodKeys.forEach(function(mood) {
+        html += '<span class="mood-tag">' + mood + ' ×' + moodCounts[mood] + '</span>';
+      });
+      html += '</div></div>';
+    }
+
+    // Section 4: AI-style Insights (Rule-based analysis)
+    html += '<div class="report-section">';
+    html += '<h3>智能分析</h3>';
+    var insights = this.analyzeInsights(entries, recordedDates, effValues, restValues, avgEff, avgRest, completionRate, totalTasks, doneTasks);
+    insights.forEach(function(ins) {
+      html += '<div class="insight-card ' + ins.type + '"><span class="insight-icon">' + ins.icon + '</span>' + ins.text + '</div>';
+    });
+    html += '</div>';
+
+    // Section 5: Day-by-day breakdown
+    html += '<div class="report-section">';
+    html += '<h3>逐日记录</h3>';
+    html += '<div class="report-day-list">';
+    recordedDates.forEach(function(dateStr) {
+      var e = this.data[dateStr];
+      html += '<div class="report-day-item">';
+      html += '<div class="day-header">';
+      html += '<span class="day-date">' + dateStr + ' ' + getDayOfWeek(dateStr) + '</span>';
+      if (e.mood) html += '<span>' + e.mood + '</span>';
+      if (e.efficiency) html += '<span style="color:var(--warning);">效率' + e.efficiency + '★</span>';
+      if (e.rest) html += '<span style="color:var(--info);">休息' + e.rest + '★</span>';
+      html += '</div>';
+      var parts = [];
+      if (e.tasks && e.tasks.length > 0) {
+        var done = e.tasks.filter(function(t){return t.done;}).length;
+        parts.push('完成 ' + done + '/' + e.tasks.length + ' 项任务');
+      }
+      if (e.bestThing) parts.push('🌟 ' + e.bestThing);
+      if (e.difficulty) parts.push('🧗 ' + e.difficulty);
+      if (e.learning) parts.push('📖 ' + e.learning);
+      if (e.redoDifferently) parts.push('🔄 ' + e.redoDifferently);
+      if (e.reflectionFeeling) parts.push('🧘 ' + e.reflectionFeeling);
+      if (e.reflectionConfusion) parts.push('💭 ' + e.reflectionConfusion);
+      if (parts.length > 0) {
+        html += '<div class="day-detail">' + parts.join('<br>') + '</div>';
+      }
+      html += '</div>';
+    }, this);
+    html += '</div></div>';
+
+    // AI Deep Analysis Button
+    html += '<div class="report-actions">';
+    html += '<button class="btn-ai" id="aiDeepBtn">🧠 AI 高我深读</button>';
+    html += '</div>';
+    html += '<div id="aiResultContainer"></div>';
+
+    // Render
+    document.getElementById('reportModal').innerHTML = html;
+    document.getElementById('reportOverlay').classList.add('active');
+
+    // Bind close
+    document.getElementById('reportCloseBtn').addEventListener('click', function() {
+      document.getElementById('reportOverlay').classList.remove('active');
+    });
+    document.getElementById('reportOverlay').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('active');
+    });
+
+    // Bind AI deep analysis
+    document.getElementById('aiDeepBtn').addEventListener('click', function() {
+      App.doAIDeepAnalysis(recordedDates, title, subtitle);
+    });
+  },
+
+  /* --- AI Deep Analysis --- */
+  doAIDeepAnalysis: function(dates, title, subtitle) {
+    var container = document.getElementById('aiResultContainer');
+    var btn = document.getElementById('aiDeepBtn');
+
+    // Check API config
+    var config = App.getAIConfig();
+    if (!config.apiKey) {
+      container.innerHTML = App.renderAIConfigForm();
+      App.bindAIConfigForm();
+      return;
+    }
+
+    // Build prompt
+    var isMonthly = title.indexOf('月') >= 0;
+    var prompt = App.buildAIPrompt(dates, isMonthly, subtitle);
+
+    // Show loading
+    btn.disabled = true;
+    btn.textContent = '🧠 高我正在深读...';
+    container.innerHTML = '<div class="ai-loading"><div class="spinner"></div><br>高我正在以跨维度视角审视你的记录...<br><span style="font-size:0.75rem;color:var(--text-muted);">这可能需要 10-30 秒</span></div>';
+
+    // Build request body - OpenAI compatible format
+    var systemPrompt = isMonthly
+      ? '你是用户的「高我」——一个超越日常自我的智慧观察者。你融合道德经的无为与柔克刚、庄子的齐物与逍遥、禅宗的觉知与放下、以及现代心理学的认知行为洞察。请对用户的月度复盘数据进行八大维度的深度分析。语气温柔而深刻，像一位既了解你又超越你的智者。用中文回复，使用 Markdown 格式。'
+      : '你是用户的「高我」——一个超越日常自我的智慧观察者。你融合道德经的无为与柔克刚、庄子的齐物与逍遥、禅宗的觉知与放下、以及现代心理学的认知行为洞察。请对用户的周度复盘数据进行深度分析，回答七个核心问题。语气温柔而深刻，像一位既了解你又超越你的智者。用中文回复，使用 Markdown 格式。';
+
+    var body = {
+      model: config.model || 'deepseek-v4-flash',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.8,
+      max_tokens: 4000
+    };
+
+    // Use same-origin proxy to bypass CORS issues
+    var proxyUrl = '/api/proxy';
+    var proxyBody = {
+      targetUrl: config.baseUrl + '/v1/chat/completions',
+      apiKey: config.apiKey,
+      body: body
+    };
+    fetch(proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(proxyBody)
+    }).then(function(resp) {
+      return resp.text().then(function(txt) {
+        if (!resp.ok) {
+          var errMsg = 'HTTP ' + resp.status;
+          var tip = '';
+          var lowerTxt = txt.toLowerCase();
+          if (resp.status === 401 || lowerTxt.indexOf('authentication') >= 0) {
+            tip = '\n\n🔑 API Key 无效，请检查：\n1. Key 是否正确复制（sk- 开头）\n2. 后台是否已创建 Key';
+          } else if (lowerTxt.indexOf('insufficient balance') >= 0 || lowerTxt.indexOf('余额') >= 0) {
+            tip = '\n\n💰 账户余额不足！请登录 platform.deepseek.com 充值';
+          } else if (resp.status === 404) {
+            tip = '\n\n📡 接口地址不对，请检查 Base URL：\n• DeepSeek: https://api.deepseek.com\n• 月之暗面: https://api.moonshot.cn';
+          } else if (resp.status === 429) {
+            tip = '\n\n⏰ 请求太频繁或额度用完，请稍后再试';
+          } else {
+            try { var ej = JSON.parse(txt); if (ej.error && ej.error.message) errMsg += ': ' + ej.error.message; } catch(e) { errMsg += ': ' + txt.substring(0, 150); }
+          }
+          throw new Error(errMsg + tip);
+        }
+        return JSON.parse(txt);
+      });
+    }).then(function(data) {
+      var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if (!content) throw new Error('返回内容为空，可能模型不可用：' + (config.model || 'deepseek-v4-flash'));
+      // Simple markdown to HTML
+      var html = App.markdownToHTML(content);
+      container.innerHTML = '<div class="ai-result">' + html + '</div>';
+      btn.disabled = false;
+      btn.textContent = '🧠 重新深读';
+    }).catch(function(err) {
+      var isNetwork = err.message.indexOf('Failed to fetch') >= 0 || err.message.indexOf('NetworkError') >= 0;
+      var errHtml;
+      if (isNetwork) {
+        errHtml = '<strong>⚠️ 网络连接失败</strong><br><br>无法连接到 AI 服务，可能原因：<br>• Base URL 不正确<br>• 当前网络环境限制<br><br>当前配置：<br>Base URL: ' + escapeHTML(config.baseUrl) + '<br>模型: ' + escapeHTML(config.model) + '<br><br>';
+      } else {
+        errHtml = '<strong>⚠️ 调用失败</strong><br><br>' + escapeHTML(err.message) + '<br><br>当前配置：<br>Base URL: ' + escapeHTML(config.baseUrl) + '<br>模型: ' + escapeHTML(config.model) + '<br><br>';
+      }
+      errHtml += '<button class="btn btn-outline btn-small" onclick="App.showAIConfig()">⚙️ 修改 API 配置</button>';
+      container.innerHTML = '<div class="ai-result" style="border-color:var(--danger);">' + errHtml + '</div>';
+      btn.disabled = false;
+      btn.textContent = '🧠 AI 高我深读';
+    });
+  },
+
+  getAIConfig: function() {
+    return {
+      baseUrl: localStorage.getItem('muxing-ai-base') || 'https://api.deepseek.com',
+      apiKey: localStorage.getItem('muxing-ai-key') || '',
+      model: localStorage.getItem('muxing-ai-model') || 'deepseek-v4-flash'
+    };
+  },
+
+  renderAIConfigForm: function() {
+    var config = App.getAIConfig();
+    return '<div class="ai-config">' +
+      '<h3 style="margin-bottom:12px;">⚙️ AI 配置（仅存本地）</h3>' +
+      '<p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">首次使用需要配置 AI API。推荐 <strong>DeepSeek</strong>（国内速度快，注册送免费额度）。</p>' +
+      '<div style="margin-bottom:10px;"><label>API Base URL</label>' +
+      '<input type="text" id="aiBaseUrl" value="' + escapeHTML(config.baseUrl) + '" placeholder="https://api.deepseek.com"></div>' +
+      '<div style="margin-bottom:10px;"><label>API Key</label>' +
+      '<input type="text" id="aiApiKey" value="' + escapeHTML(config.apiKey) + '" placeholder="sk-..."></div>' +
+      '<div style="margin-bottom:10px;"><label>模型名称</label>' +
+      '<input type="text" id="aiModel" value="' + escapeHTML(config.model) + '" placeholder="deepseek-v4-flash"></div>' +
+      '<p class="config-hint">📌 DeepSeek 注册：platform.deepseek.com → API Keys<br>📌 也支持 OpenAI / 月之暗面 / 其他兼容接口<br>🔒 Key 仅存在你的浏览器中，不会上传</p>' +
+      '<button class="btn btn-primary btn-small" id="aiSaveBtn" style="margin-top:8px;">保存并开始分析</button>' +
+      '</div>';
+  },
+
+  bindAIConfigForm: function() {
+    document.getElementById('aiSaveBtn').addEventListener('click', function() {
+      var baseUrl = document.getElementById('aiBaseUrl').value.trim().replace(/\/+$/, '');
+      var apiKey = document.getElementById('aiApiKey').value.trim();
+      var model = document.getElementById('aiModel').value.trim();
+      if (!apiKey) { showToast('请输入 API Key', 'error'); return; }
+      localStorage.setItem('muxing-ai-base', baseUrl || 'https://api.deepseek.com');
+      localStorage.setItem('muxing-ai-key', apiKey);
+      localStorage.setItem('muxing-ai-model', model || 'deepseek-v4-flash');
+      showToast('配置已保存', 'success');
+      // Re-trigger analysis
+      var btn = document.getElementById('aiDeepBtn');
+      if (btn) btn.click();
+    });
+  },
+
+  showAIConfig: function() {
+    var container = document.getElementById('aiResultContainer');
+    container.innerHTML = App.renderAIConfigForm();
+    App.bindAIConfigForm();
+  },
+
+  buildAIPrompt: function(dates, isMonthly, subtitle) {
+    var lines = [];
+    lines.push('以下是' + (isMonthly ? '月' : '周') + '复盘数据（' + subtitle + '），共 ' + dates.length + ' 天记录：');
+    lines.push('');
+
+    dates.forEach(function(dateStr) {
+      var d = this.data[dateStr];
+      if (!d) return;
+      lines.push('【' + dateStr + ' ' + getDayOfWeek(dateStr) + '】');
+      if (d.mood) lines.push('心情: ' + d.mood);
+      if (d.efficiency) lines.push('效率评分: ' + d.efficiency + '/5');
+      if (d.rest) lines.push('休息评分: ' + d.rest + '/5');
+      if (d.tasks && d.tasks.length > 0) {
+        var done = d.tasks.filter(function(t){return t.done;}).length;
+        lines.push('任务(' + done + '/' + d.tasks.length + '完成):');
+        d.tasks.forEach(function(t) {
+          lines.push('  ' + (t.done ? '[✓]' : '[ ]') + ' ' + t.text);
+        });
+      }
+      if (d.bestThing) lines.push('亮点: ' + d.bestThing);
+      if (d.difficulty) lines.push('困难: ' + d.difficulty);
+      if (d.learning) lines.push('学习: ' + d.learning);
+      if (d.redoDifferently) lines.push('反思: ' + d.redoDifferently);
+      if (d.reflectionFeeling) lines.push('修行感悟: ' + d.reflectionFeeling);
+      if (d.reflectionConfusion) lines.push('情绪困惑: ' + d.reflectionConfusion);
+      if (d.reflectionThought) lines.push('念头观察: ' + d.reflectionThought);
+      lines.push('');
+    }, this);
+
+    if (isMonthly) {
+      lines.push('请以「高我」视角，从以下八大维度进行深度分析：');
+      lines.push('');
+      lines.push('## 一、时间感知');
+      lines.push('对"过得快/慢"的主观体验变化，时间是否在加速或停滞？');
+      lines.push('');
+      lines.push('## 二、情绪觉察力');
+      lines.push('从命名情绪→理解原因→自我调节的成熟度如何？情绪波动的规律？');
+      lines.push('');
+      lines.push('## 三、念头模式');
+      lines.push('反复出现的念头类型、执念方向，哪些念头在消耗能量？');
+      lines.push('');
+      lines.push('## 四、执着点');
+      lines.push('在什么情境下最容易"放不下"？执着的是什么？');
+      lines.push('');
+      lines.push('## 五、行动对齐');
+      lines.push('做的事和个人价值观是否一致？有没有言行不一处？');
+      lines.push('');
+      lines.push('## 六、成长弧线');
+      lines.push('比较月初 vs 月末的状态变化，成长的方向是什么？');
+      lines.push('');
+      lines.push('## 七、人际关系');
+      lines.push('从记录中反映出的人际互动模式，有无需要调整的关系？');
+      lines.push('');
+      lines.push('## 八、身体/能量');
+      lines.push('休息质量、精力波动与效率的关联，身体的信号？');
+      lines.push('');
+      lines.push('最后请给出一段「高我寄语」——用道德经或庄子的智慧，为这个月做一个总结性的点化。');
+    } else {
+      lines.push('请以「高我」视角，深度分析以下七个问题：');
+      lines.push('');
+      lines.push('1. 本周完成了哪3件最重要的事？聚焦产出，不被琐事淹没');
+      lines.push('2. 本周效率评分趋势如何？哪天最高/最低？深层原因是什么？');
+      lines.push('3. 心情曲线有什么模式？情绪与事件之间有什么关联？');
+      lines.push('4. 有没有反复出现的困难或念头？这个"卡住"的模式在提醒什么？');
+      lines.push('5. 本周学到的最有价值的东西是什么？不只是知识，更是领悟');
+      lines.push('6. 下一周最重要的3个目标是什么？基于本周模式给出建议');
+      lines.push('7. 如果只用一句话总结这周，是什么？');
+      lines.push('');
+      lines.push('最后请给出一段「高我寄语」——用禅宗或道德经的智慧，为这周做一个点化。');
+    }
+
+    return lines.join('\n');
+  },
+
+  /* Simple Markdown to HTML */
+  markdownToHTML: function(md) {
+    var lines = md.split('\n');
+    var html = '';
+    var inList = false;
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      // Headings
+      if (line.startsWith('### ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<h4>' + escapeHTML(line.substring(4)) + '</h4>';
+      } else if (line.startsWith('## ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<h4>' + escapeHTML(line.substring(3)) + '</h4>';
+      } else if (line.startsWith('# ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<h4>' + escapeHTML(line.substring(2)) + '</h4>';
+      } else if (/^\d+\.\s/.test(line)) {
+        html += '<div style="margin:4px 0;">' + escapeHTML(line) + '</div>';
+      } else if (line.startsWith('- ') || line.startsWith('* ')) {
+        if (!inList) { html += '<ul style="margin:4px 0 4px 16px;">'; inList = true; }
+        html += '<li>' + escapeHTML(line.substring(2)) + '</li>';
+      } else if (line.trim() === '') {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<br>';
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        // Bold
+        var processed = escapeHTML(line).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html += '<p style="margin:4px 0;">' + processed + '</p>';
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
+  },
+
+  /* --- Rule-based Insight Analysis --- */
+  analyzeInsights: function(entries, dates, effValues, restValues, avgEff, avgRest, completionRate, totalTasks, doneTasks) {
+    var insights = [];
+
+    // 1. Efficiency trend
+    if (effValues.length >= 3) {
+      var recent3 = effValues.slice(-3);
+      var isDecreasing = recent3[0] > recent3[1] && recent3[1] > recent3[2];
+      var isIncreasing = recent3[0] < recent3[1] && recent3[1] < recent3[2];
+      if (isDecreasing) {
+        insights.push({ type: 'warning', icon: '📉', text: '效率连续下降（' + recent3.join('→') + '），建议关注最近的精力分配，是否休息不足或任务过重？' });
+      } else if (isIncreasing) {
+        insights.push({ type: 'success', icon: '📈', text: '效率持续上升（' + recent3.join('→') + '），状态越来越好，保持这个节奏！' });
+      } else {
+        var maxIdx = effValues.indexOf(Math.max.apply(null, effValues));
+        var minIdx = effValues.indexOf(Math.min.apply(null, effValues));
+        insights.push({ type: 'info', icon: '📊', text: '效率最高的一天是 ' + dates[maxIdx] + '（' + effValues[maxIdx] + '★），最低是 ' + dates[minIdx] + '（' + effValues[minIdx] + '★）。回想高效率那天做了什么不同？' });
+      }
+    }
+
+    // 2. Rest vs Efficiency correlation
+    if (avgEff > 0 && avgRest > 0) {
+      if (avgRest < 2.5 && avgEff < 3) {
+        insights.push({ type: 'warning', icon: '😴', text: '休息和效率都偏低。睡眠和休息是效率的地基，建议优先改善休息质量，而非硬撑效率。' });
+      } else if (avgRest >= 3.5 && avgEff >= 3.5) {
+        insights.push({ type: 'success', icon: '⚖️', text: '休息与效率双高，说明你在精力管理上做得很好，生活节奏健康。' });
+      } else if (avgRest < avgEff - 1) {
+        insights.push({ type: 'warning', icon: '⚡', text: '效率高于休息较多，短期可行但长期可能透支。注意给自己充电的时间。' });
+      }
+    }
+
+    // 3. Task completion
+    if (totalTasks > 0) {
+      if (completionRate >= 80) {
+        insights.push({ type: 'success', icon: '✅', text: '任务完成率 ' + completionRate + '%，执行力很强。注意不要只追求完成数量，也要关注做了哪些真正重要的事。' });
+      } else if (completionRate < 50) {
+        insights.push({ type: 'warning', icon: '⚠️', text: '任务完成率仅 ' + completionRate + '%，可能是计划过多或精力分散。建议每天聚焦 3 件核心事项。' });
+      } else {
+        insights.push({ type: 'info', icon: '📋', text: '任务完成率 ' + completionRate + '%，适中。完成的 ' + doneTasks + ' 件事里，哪些带来了真正的进展？' });
+      }
+    }
+
+    // 4. Mood pattern
+    var moodEntries = entries.filter(function(e) { return e.mood; });
+    if (moodEntries.length >= 2) {
+      var positiveMoods = ['🥳', '😊', '🙏'];
+      var negativeMoods = ['😔', '😤', '😰'];
+      var posCount = moodEntries.filter(function(e) { return positiveMoods.indexOf(e.mood) >= 0; }).length;
+      var negCount = moodEntries.filter(function(e) { return negativeMoods.indexOf(e.mood) >= 0; }).length;
+      if (negCount > posCount) {
+        insights.push({ type: 'warning', icon: '🌊', text: '负面情绪出现较多（' + negCount + ' 次）。情绪是信号，不是敌人——看看它在提醒你什么？也许是时候放慢脚步了。' });
+      } else if (posCount > 0 && posCount >= negCount * 2) {
+        insights.push({ type: 'success', icon: '🌈', text: '整体情绪积极（正面 ' + posCount + ' 次 vs 负面 ' + negCount + ' 次），心态不错，继续保持。' });
+      }
+    }
+
+    // 5. Recurring difficulties
+    var difficulties = entries.map(function(e) { return e.difficulty; }).filter(function(d) { return d && d.trim(); });
+    if (difficulties.length >= 2) {
+      // Simple keyword overlap detection
+      var allWords = {};
+      difficulties.forEach(function(d) {
+        d.split(/[，。、,.\s]+/).forEach(function(w) {
+          if (w.length >= 2) allWords[w] = (allWords[w] || 0) + 1;
+        });
+      });
+      var recurring = Object.keys(allWords).filter(function(w) { return allWords[w] >= 2; });
+      if (recurring.length > 0) {
+        insights.push({ type: 'info', icon: '🔄', text: '反复出现的关键词："' + recurring.slice(0, 3).join('、') + '"。当同一个困难反复出现，它可能不是问题本身，而是一个需要被看见的模式。' });
+      }
+    }
+
+    // 6. Reflection depth
+    var reflectionCount = entries.filter(function(e) {
+      return (e.reflectionFeeling && e.reflectionFeeling.trim()) || (e.reflectionConfusion && e.reflectionConfusion.trim());
+    }).length;
+    if (reflectionCount >= entries.length * 0.5) {
+      insights.push({ type: 'success', icon: '🧘', text: '坚持修行反思，内观力在持续锻炼。觉知本身即是改变的发生。' });
+    } else if (reflectionCount === 0 && entries.length >= 3) {
+      insights.push({ type: 'info', icon: '🌱', text: '还没有记录修行反思。如果愿意，可以试试在「修行反思」标签页写下今天的感受和念头观察。' });
+    }
+
+    // 7. Consistency
+    if (dates.length >= 5) {
+      var gaps = 0;
+      for (var i = 1; i < dates.length; i++) {
+        var diff = (new Date(dates[i]) - new Date(dates[i-1])) / 86400000;
+        if (diff > 1) gaps++;
+      }
+      if (gaps === 0) {
+        insights.push({ type: 'success', icon: '🔥', text: '连续 ' + dates.length + ' 天记录不断，坚持本身就是一种修行。' });
+      } else {
+        insights.push({ type: 'info', icon: '📅', text: '记录有 ' + gaps + ' 次中断。不必追求完美连续，重要的是每次回来——"不怕念起，只怕觉迟"。' });
+      }
+    }
+
+    // 8. Wisdom quote based on state
+    if (avgEff > 0 && avgEff < 3) {
+      insights.push({ type: 'info', icon: '🌙', text: '"为学日益，为道日损。" 效率低的时候，也许不是做得不够多，而是需要放下一些不必要的事。' });
+    } else if (avgEff >= 4) {
+      insights.push({ type: 'info', icon: '☀️', text: '"合抱之木，生于毫末。" 高效率不是偶然，是每一天小积累的结果。' });
+    }
+
+    if (insights.length === 0) {
+      insights.push({ type: 'info', icon: '📝', text: '数据尚少，继续记录几天，会有更深入的分析。' });
+    }
+
+    return insights;
+  },
+
+  buildReviewText: function(dates, label) {
+    var lines = [];
+    lines.push('='.repeat(50));
+    lines.push('  ' + label + '复盘数据');
+    lines.push('  日期范围: ' + (dates[0] || '') + ' ~ ' + (dates[dates.length - 1] || ''));
+    lines.push('  生成时间: ' + new Date().toLocaleString());
+    lines.push('='.repeat(50));
+    lines.push('');
+
+    var totalEfficiency = 0;
+    var totalRest = 0;
+    var countEff = 0;
+    var countRest = 0;
+    var moodCounts = {};
+    var totalTasks = 0;
+    var doneTasks = 0;
+
+    dates.forEach(function(dateStr) {
+      var d = App.data[dateStr];
+      if (!d) return;
+
+      lines.push('--- ' + dateStr + ' ' + getDayOfWeek(dateStr) + ' ---');
+      if (d.mood) {
+        lines.push('心情: ' + d.mood);
+        moodCounts[d.mood] = (moodCounts[d.mood] || 0) + 1;
+      }
+      if (d.efficiency && d.efficiency > 0) {
+        lines.push('效率: ' + '⭐'.repeat(d.efficiency) + ' (' + d.efficiency + '/5)');
+        totalEfficiency += d.efficiency;
+        countEff++;
+      }
+      if (d.rest && d.rest > 0) {
+        lines.push('休息: ' + '⭐'.repeat(d.rest) + ' (' + d.rest + '/5)');
+        totalRest += d.rest;
+        countRest++;
+      }
+      if (d.tasks && d.tasks.length > 0) {
+        var done = d.tasks.filter(function(t) { return t.done; }).length;
+        lines.push('完成事项: ' + done + '/' + d.tasks.length);
+        totalTasks += d.tasks.length;
+        doneTasks += done;
+        d.tasks.forEach(function(t) {
+          lines.push('  ' + (t.done ? '[✓]' : '[ ]') + ' ' + t.text);
+        });
+      }
+      if (d.bestThing) lines.push('亮点: ' + d.bestThing);
+      if (d.difficulty) lines.push('困难: ' + d.difficulty);
+      if (d.learning) lines.push('学习: ' + d.learning);
+      if (d.redoDifferently) lines.push('反思: ' + d.redoDifferently);
+      if (d.reflectionFeeling) lines.push('修行感悟: ' + d.reflectionFeeling);
+      if (d.reflectionConfusion) lines.push('情绪困惑: ' + d.reflectionConfusion);
+      lines.push('');
+    });
+
+    // Summary
+    lines.push('='.repeat(50));
+    lines.push('  数据摘要');
+    lines.push('='.repeat(50));
+    if (countEff > 0) lines.push('平均效率: ' + (totalEfficiency / countEff).toFixed(1) + ' / 5');
+    if (countRest > 0) lines.push('平均休息: ' + (totalRest / countRest).toFixed(1) + ' / 5');
+    if (totalTasks > 0) lines.push('任务完成率: ' + Math.round(doneTasks / totalTasks * 100) + '% (' + doneTasks + '/' + totalTasks + ')');
+    lines.push('记录天数: ' + dates.filter(function(d) { return !!App.data[d]; }).length + ' / ' + dates.length);
+
+    return lines.join('\n');
+  },
+
+  copyToClipboard: function(text, successMsg) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        showToast(successMsg || '已复制到剪贴板', 'success');
+      }).catch(function() {
+        App.fallbackCopy(text, successMsg);
+      });
+    } else {
+      this.fallbackCopy(text, successMsg);
+    }
+  },
+
+  fallbackCopy: function(text, successMsg) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      showToast(successMsg || '已复制到剪贴板', 'success');
+    } catch (e) {
+      showToast('复制失败，请手动复制', 'error');
+    }
+    document.body.removeChild(ta);
+  },
+
+  downloadText: function(text, filename) {
+    var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
+
+  /* --- Backup --- */
+  backupData: function() {
+    var json = JSON.stringify(this.data, null, 2);
+    var blob = new Blob([json], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    var dateCount = Object.keys(this.data).length;
+    a.download = 'muxing-backup-' + this.today + '-' + dateCount + 'days.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    // Record backup time
+    localStorage.setItem('muxing-last-backup', this.today);
+    showToast('💾 备份已下载（' + dateCount + ' 天记录）', 'success');
+  },
+
+  /* --- Export Markdown --- */
+  exportMarkdown: function() {
+    var sorted = this.getSortedDates();
+    if (sorted.length === 0) {
+      showToast('还没有记录可导出', 'error');
+      return;
+    }
+    var lines = [];
+    lines.push('# 暮省 · 复盘记录');
+    lines.push('');
+    lines.push('> 导出时间：' + new Date().toLocaleString());
+    lines.push('> 共 ' + sorted.length + ' 天记录');
+    lines.push('');
+    lines.push('---');
+    lines.push('');
+
+    sorted.forEach(function(dateStr) {
+      var d = this.data[dateStr];
+      lines.push('## ' + dateStr + ' ' + getDayOfWeek(dateStr));
+      lines.push('');
+
+      if (d.mood) lines.push('**心情**：' + d.mood);
+
+      if (d.tasks && d.tasks.length > 0) {
+        lines.push('');
+        lines.push('### 今日完成');
+        d.tasks.forEach(function(t) {
+          lines.push((t.done ? '- [x] ' : '- [ ] ') + t.text);
+        });
+      }
+
+      if (d.bestThing) { lines.push(''); lines.push('### 亮点'); lines.push(d.bestThing); }
+      if (d.difficulty) { lines.push(''); lines.push('### 困难'); lines.push(d.difficulty); }
+      if (d.learning) { lines.push(''); lines.push('### 学习'); lines.push(d.learning); }
+      if (d.redoDifferently) { lines.push(''); lines.push('### 反思'); lines.push('> ' + d.redoDifferently); }
+
+      if (d.efficiency || d.rest) {
+        lines.push('');
+        var scores = [];
+        if (d.efficiency) scores.push('效率 ' + d.efficiency + '/5');
+        if (d.rest) scores.push('休息 ' + d.rest + '/5');
+        lines.push('**评分**：' + scores.join(' · '));
+      }
+
+      if (d.tomorrowTop3 && d.tomorrowTop3.some(function(x){return x;})) {
+        lines.push('');
+        lines.push('### 明日核心 3 件事');
+        d.tomorrowTop3.forEach(function(item, idx) {
+          if (item) lines.push((idx + 1) + '. ' + item);
+        });
+      }
+      if (d.tomorrowOthers && d.tomorrowOthers.length > 0) {
+        lines.push('');
+        lines.push('### 其他待办');
+        d.tomorrowOthers.forEach(function(item) { lines.push('- ' + item); });
+      }
+      if (d.tomorrowReminder) { lines.push(''); lines.push('**提醒**：' + d.tomorrowReminder); }
+
+      if (d.reflectionFeeling || d.reflectionConfusion || d.reflectionThought) {
+        lines.push('');
+        lines.push('### 修行反思');
+        if (d.reflectionFeeling) lines.push('**感悟**：' + d.reflectionFeeling);
+        if (d.reflectionConfusion) lines.push('**困惑**：' + d.reflectionConfusion);
+        if (d.reflectionThought) lines.push('**念头观察**：' + d.reflectionThought);
+      }
+
+      lines.push('');
+      lines.push('---');
+      lines.push('');
+    }, this);
+
+    var md = lines.join('\n');
+    var blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'muxing-' + this.today + '.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('📝 Markdown 已导出', 'success');
+  },
+
+  /* --- Import with smart merge --- */
+  importData: function(file) {
+    var reader = new FileReader();
+    var self = this;
+    reader.onload = function(e) {
+      try {
+        var imported = JSON.parse(e.target.result);
+        var newCount = 0;
+        var conflictCount = 0;
+        var conflicts = [];
+
+        for (var key in imported) {
+          if (imported.hasOwnProperty(key)) {
+            if (!self.data[key]) {
+              self.data[key] = imported[key];
+              newCount++;
+            } else {
+              conflictCount++;
+              conflicts.push(key);
+            }
+          }
+        }
+
+        if (conflictCount > 0) {
+          // Ask user about conflicts
+          if (confirm('发现 ' + newCount + ' 条新记录 + ' + conflictCount + ' 条冲突日期（' + conflicts.slice(0,3).join(', ') + (conflicts.length > 3 ? '...' : '') + '）\n\n点击"确定"：覆盖冲突日期\n点击"取消"：仅保留新记录（' + newCount + ' 条）')) {
+            conflicts.forEach(function(key) {
+              self.data[key] = imported[key];
+            });
+            self.saveData();
+            showToast('导入完成：' + newCount + ' 条新 + ' + conflictCount + ' 条覆盖', 'success');
+          } else {
+            self.saveData();
+            showToast('导入完成：' + newCount + ' 条新记录（跳过 ' + conflictCount + ' 条冲突）', 'success');
+          }
+        } else {
+          self.saveData();
+          showToast('成功导入 ' + newCount + ' 条记录', 'success');
+        }
+        self.renderHistory();
+      } catch (err) {
+        showToast('文件格式错误，请选择有效的 JSON 文件', 'error');
+      }
+    };
+    reader.readAsText(file);
+  },
+
+  /* --- Backup reminder check --- */
+  checkBackupReminder: function() {
+    var lastBackup = localStorage.getItem('muxing-last-backup');
+    var reminderEl = document.getElementById('backupReminder');
+    if (!reminderEl) return;
+
+    var sorted = this.getSortedDates();
+    if (sorted.length === 0) return; // No data, no reminder
+
+    if (!lastBackup) {
+      // Never backed up
+      reminderEl.style.cssText = 'background:var(--bg-card);border:1px solid var(--warning);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:0.82rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;';
+      reminderEl.innerHTML = '<span>⚠️</span> 你还没有备份过数据。建议定期备份，防止浏览器清理缓存导致数据丢失。<button class="btn btn-outline btn-small" id="reminderBackupBtn" style="margin-left:auto;">立即备份</button>';
+      document.getElementById('reminderBackupBtn').addEventListener('click', function() {
+        App.backupData();
+        App.checkBackupReminder();
+      });
+      return;
+    }
+
+    // Check if 7 days since last backup
+    var lastDate = new Date(lastBackup);
+    var now = new Date();
+    var diffDays = Math.floor((now - lastDate) / 86400000);
+    if (diffDays >= 7) {
+      reminderEl.style.cssText = 'background:var(--bg-card);border:1px solid var(--info);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:0.82rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;';
+      reminderEl.innerHTML = '<span>📅</span> 距上次备份已 ' + diffDays + ' 天，建议备份一次。<button class="btn btn-outline btn-small" id="reminderBackupBtn" style="margin-left:auto;">立即备份</button>';
+      document.getElementById('reminderBackupBtn').addEventListener('click', function() {
+        App.backupData();
+        App.checkBackupReminder();
+      });
+    } else {
+      reminderEl.style.display = 'none';
+    }
+  },
+
+  /* --- Initialization --- */
+  init: function() {
+    var self = this;
+
+    // Load data
+    this.loadData();
+
+    // Privacy banner
+    var bannerClosed = localStorage.getItem('daily-review-privacy-banner-closed');
+    var privacyBanner = document.getElementById('privacyBanner');
+    if (bannerClosed) {
+      privacyBanner.style.display = 'none';
+    }
+    document.getElementById('closePrivacyBtn').addEventListener('click', function() {
+      privacyBanner.style.display = 'none';
+      localStorage.setItem('daily-review-privacy-banner-closed', '1');
+    });
+
+    // Tab switching
+    document.getElementById('tabNav').addEventListener('click', function(e) {
+      var btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      var tabName = btn.getAttribute('data-tab');
+      self.switchTab(tabName);
+    });
+
+    // --- Review Tab Events ---
+    // Add task
+    document.getElementById('addTaskBtn').addEventListener('click', function() {
+      var input = document.getElementById('taskInput');
+      var text = input.value.trim();
+      if (!text) return;
+      var d = self.getTodayData();
+      d.tasks.push({ text: text, done: false });
+      input.value = '';
+      self.renderTaskList(d);
+    });
+    document.getElementById('taskInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('addTaskBtn').click();
+      }
+    });
+
+    // Mood selection
+    document.getElementById('moodGrid').addEventListener('click', function(e) {
+      var btn = e.target.closest('.mood-btn');
+      if (!btn) return;
+      var mood = btn.getAttribute('data-mood');
+      var d = self.getTodayData();
+      d.mood = mood;
+      self.renderReview();
+    });
+
+    // Star ratings
+    document.getElementById('efficiencyStars').addEventListener('click', function(e) {
+      var btn = e.target.closest('.star-btn');
+      if (!btn) return;
+      var val = parseInt(btn.getAttribute('data-value'));
+      var d = self.getTodayData();
+      d.efficiency = val;
+      self.renderStars('efficiencyStars', val);
+    });
+    document.getElementById('restStars').addEventListener('click', function(e) {
+      var btn = e.target.closest('.star-btn');
+      if (!btn) return;
+      var val = parseInt(btn.getAttribute('data-value'));
+      var d = self.getTodayData();
+      d.rest = val;
+      self.renderStars('restStars', val);
+    });
+
+    // Save today
+    document.getElementById('saveTodayBtn').addEventListener('click', function() {
+      self.collectReviewData();
+      if (!self.validateReview()) return;
+      self.saveData();
+    });
+
+    // --- Plan Tab Events ---
+    document.getElementById('addOtherBtn').addEventListener('click', function() {
+      var input = document.getElementById('otherInput');
+      var text = input.value.trim();
+      if (!text) return;
+      var d = self.getTodayData();
+      if (!d.tomorrowOthers) d.tomorrowOthers = [];
+      d.tomorrowOthers.push(text);
+      input.value = '';
+      self.renderOtherList(d);
+    });
+    document.getElementById('otherInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        document.getElementById('addOtherBtn').click();
+      }
+    });
+
+    document.getElementById('savePlanBtn').addEventListener('click', function() {
+      self.collectPlanData();
+      self.saveData();
+    });
+
+    // --- Reflect Tab Events ---
+    document.getElementById('refreshQuoteBtn').addEventListener('click', function() {
+      self.renderRandomQuote();
+    });
+
+    document.getElementById('copyReflectBtn').addEventListener('click', function() {
+      self.collectReflectData();
+      var text = self.getReflectText();
+      if (!text.trim()) {
+        showToast('没有可复制的内容', 'error');
+        return;
+      }
+      self.copyToClipboard(text, '修行反思已复制到剪贴板');
+    });
+
+    document.getElementById('exportReflectBtn').addEventListener('click', function() {
+      self.collectReflectData();
+      var text = self.getReflectText();
+      if (!text.trim()) {
+        showToast('没有可导出的内容', 'error');
+        return;
+      }
+      self.downloadText(text, 'reflect-' + self.today + '.txt');
+      showToast('修行反思已导出', 'success');
+    });
+
+    document.getElementById('saveReflectBtn').addEventListener('click', function() {
+      self.collectReflectData();
+      self.saveData();
+    });
+
+    // --- History Tab Events ---
+    document.getElementById('backupBtn').addEventListener('click', function() {
+      self.backupData();
+    });
+
+    document.getElementById('importBtn').addEventListener('click', function() {
+      document.getElementById('importFileInput').click();
+    });
+
+    document.getElementById('importFileInput').addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (file) {
+        self.importData(file);
+      }
+      e.target.value = '';
+    });
+
+    document.getElementById('exportMdBtn').addEventListener('click', function() {
+      self.exportMarkdown();
+    });
+
+    // Reset today
+    document.getElementById('resetTodayBtn').addEventListener('click', function() {
+      if (confirm('确定要重置今天的所有复盘数据吗？历史记录不受影响。')) {
+        delete self.data[self.today];
+        self.saveData();
+        self.renderReview();
+        showToast('今日数据已重置', 'success');
+      }
+    });
+
+    // Initial render
+    this.renderReview();
+  }
+};
+
+/* ============================================================
+   Boot
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function() {
+  App.init();
+});
+</script>
+
+</body>
+</html>
