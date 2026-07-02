@@ -1401,6 +1401,7 @@ textarea::placeholder {
       <button class="btn btn-secondary btn-small" id="backupBtn">💾 备份 JSON</button>
       <button class="btn btn-secondary btn-small" id="importBtn">📂 导入 JSON</button>
       <button class="btn btn-secondary btn-small" id="exportMdBtn">📝 导出 Markdown</button>
+      <button class="btn btn-primary btn-small" id="importHistoryBtn">📥 导入历史数据</button>
       <input type="file" id="importFileInput" accept=".json" style="display:none;">
     </div>
 
@@ -1510,6 +1511,8 @@ textarea::placeholder {
 /* ============================================================
    Quote Library (50+ quotes)
    ============================================================ */
+const HISTORY_DATA = {"2026-06-27": {"mood": "😐", "tasks": [{"text": "完成投资体系的梳理，借助Claude写出来，发给宋姐去完善", "done": false}, {"text": "去昆华医院取消核磁共振", "done": false}, {"text": "订了明天去弥渡的车", "done": false}, {"text": "和Finmentor的人开会，布置任务和讨论网站建设", "done": false}], "bestThing": "初步整理完投资体系，可以往前推进了", "difficulty": "L 开车来昆华医院接我，被追尾，我打车去到现场，途中打坐片刻让自己平静了一会儿，到达的时候下大雨，我感觉的到L的处理思路，不和大爷们去较真，后来坐到车里躲雨，内心很平静，相信L能处理好，我如旁观者般，真好！", "learning": "面对难点卡点，不逃避，去面对，比想象的容易解决。也就是不要被情绪捆绑。一个人走的快，一群人走的远。和宋姐小魏同频的人一起做事，真的很爽", "redoDifferently": "更积极主动的去抠细节，会把事情推动往前的更快。", "efficiency": 5, "rest": 2, "tomorrowTop3": ["早起和宋姐通话", "出发去弥渡", ""], "tomorrowOthers": ["发送Finmentor会议记录"], "tomorrowReminder": "练习英语", "reflectionFeeling": "今天触动我的是我在面对一些突发事件的时候，非常平静，这是我以往做不到的。", "reflectionConfusion": "今天让我动摇的还是事务性的事情，比如去不去昆华医院？最后拖到傍晚去了，已经下班，似乎这就是我想要的结果。我反复想是不是不用做核磁共振了。虽然最后我没有退款，只是取消预约，现在回头想我应该退款的。遵循自己的内心，不用再去做。我的手就是过度使用的代偿性受伤，把肩部肌肉锻炼出来，应该就解决了。如果我真正平静下来面对自己的念头，我会处理的更好。", "reflectionThought": "核磁共振又想做又不想做的犹豫念头，我想做是想看下到底什么问题，不想做是觉得其实不会有大问题，就算搞清楚了也并不能解决问题，听从内心感受，不必去做。犹豫背后是恐惧吧，还没有想清楚。下面最后这段话：“关系是镜子，每一段关系都是修行。亲密关系尤其如此——它照出你最深的渴望和最怕的恐惧。今天感谢关系中那个\"难相处\"的人。”感谢妈妈，最深的渴望，付出被看见，被肯定和赞赏，最深的恐惧：死亡？怕给忽略，怕被欺负。"}, "2026-06-28": {"mood": "", "tasks": [], "bestThing": "", "difficulty": "", "learning": "", "redoDifferently": "", "efficiency": 0, "rest": 0, "tomorrowTop3": ["早起和宋姐通话", "出发去弥渡", ""], "tomorrowOthers": ["发送Finmentor会议记录"], "tomorrowReminder": "练习英语", "reflectionFeeling": "", "reflectionConfusion": "", "reflectionThought": ""}, "2026-06-29": {"mood": "😊", "tasks": [{"text": "昨天记录现在补记：从昆明走顺丰车到弥渡，经历特别值得总结。", "done": true}, {"text": "早上去逛菜场买菜", "done": true}, {"text": "下午和宋姐设计投资体系的追踪部分", "done": true}, {"text": "晚饭后推着乐乐爷爷去花灯广场", "done": true}], "bestThing": "和宋姐把投资体系中最难的部分的第一部分完成了", "difficulty": "买菜的时候不知道什么菜好，就观察买的人多的就应该是好的，确实如此，还有买菜人比较面善的，也是有效判断依据，再就是越是不太干净的才越是第一手的，", "learning": "宋姐教我摩尔缠论中的转折中枢的结构确认走势转折的识别。从和宋姐聊的关于她儿子的话题明白了静观师父说的情关是女人最难过的关，包括亲情友情和爱情", "redoDifferently": "早睡点，早起点", "efficiency": 5, "rest": 3, "tomorrowTop3": ["菜场买水果", "和宋姐建立剩下的体系", ""], "tomorrowOthers": ["追finmentor的网站建立"], "tomorrowReminder": "下午1:30和宋姐上线", "reflectionFeeling": "今天买菜没想到这么便宜，没有超过10元的小菜，除了牛肉稍贵，全部70多元5个人可以吃2天。午饭的时候，嫂子对牛腩太咸喋喋不休，让乐乐奶奶很难受，因是奶奶指挥保姆做的，我不说话，只做旁观，这是他们多年的相处模式，无法也不必去改变。如我爸所说，各尽各的孝。", "reflectionConfusion": "总想着应该早睡，总是不能睡，这让我比较烦闷", "reflectionThought": "昨天坐顺风车到弥渡，一路上不停接人，本来3.5小时路程，用了6小时，以为会比高铁快和方便，没想到更累更辛苦，而且全是低等次的人，开车人素质也很低，让我觉得来到了另一个平行世界。让我恼火的是：1、我没想到顺风车已经变成这样了，上一次的美好经验蒙蔽了，也是我自己误判：上次是父母乐乐和我4人乘坐，就是包车，所以一路顺畅。2、当发现不对的时候，没有立即止损，毅然决然下车去坐高铁。3、如同回到30年前坐车，完全被司机控制，乘客低声下气，默默忍受，生怕得罪司机，因为其他乘客基本是熟人介绍来乘坐的，他们甚至不会乘高铁，文化程度较低，4、我从滴滴平台上叫的顺风车，没想到像卖猪仔一样坐上了另一个辆车。就和这群人一路同行了。也就是说不是大众化有监管的交通工具，是无法保证什么的，风险也就因此无限扩大了，这是这次最大的教训。也是我很恼火的地方。"}, "2026-06-30": {"mood": "", "tasks": [], "bestThing": "", "difficulty": "", "learning": "", "redoDifferently": "", "efficiency": 0, "rest": 0, "tomorrowTop3": ["菜场买水果", "和宋姐建立剩下的体系", ""], "tomorrowOthers": ["追finmentor的网站建立"], "tomorrowReminder": "下午1:30和宋姐上线", "reflectionFeeling": "", "reflectionConfusion": "", "reflectionThought": ""}, "2026-07-01": {"mood": "", "tasks": [], "bestThing": "", "difficulty": "", "learning": "", "redoDifferently": "", "efficiency": 0, "rest": 0, "tomorrowTop3": ["和宋姐建立剩下的体系", "和年年讨论Finmentor的网页", ""], "tomorrowOthers": ["把暮省完成上线到gethub"], "tomorrowReminder": "上午11点开会", "reflectionFeeling": "", "reflectionConfusion": "", "reflectionThought": ""}};
+
 const QUOTES = [
   // 道德经 (~20)
   { text: "上善若水。水善利万物而不争，处众人之所恶，故几于道。", source: "《道德经》第八章" },
@@ -3173,6 +3176,38 @@ var App = {
 
     document.getElementById('exportMdBtn').addEventListener('click', function() {
       self.exportMarkdown();
+    });
+
+    document.getElementById('importHistoryBtn').addEventListener('click', function() {
+      var count = 0;
+      var conflicts = 0;
+      for (var date in HISTORY_DATA) {
+        if (HISTORY_DATA.hasOwnProperty(date)) {
+          if (!self.data[date]) {
+            self.data[date] = HISTORY_DATA[date];
+            count++;
+          } else {
+            // Merge: keep existing, fill missing
+            var existing = self.data[date];
+            var imported = HISTORY_DATA[date];
+            for (var key in imported) {
+              if (imported.hasOwnProperty(key)) {
+                if (!existing[key] || (Array.isArray(existing[key]) && existing[key].length === 0)) {
+                  existing[key] = imported[key];
+                }
+              }
+            }
+            conflicts++;
+          }
+        }
+      }
+      self.saveData();
+      if (conflicts > 0) {
+        showToast('导入完成：' + count + ' 条新 + ' + conflicts + ' 条合并', 'success');
+      } else {
+        showToast('成功导入 ' + count + ' 条历史记录', 'success');
+      }
+      self.renderHistory();
     });
 
     // Reset today
