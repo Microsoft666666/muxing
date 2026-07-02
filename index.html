@@ -2271,19 +2271,15 @@ var App = {
       max_tokens: 4000
     };
 
-    // Use same-origin proxy to bypass CORS issues
-    var proxyUrl = '/api/proxy';
-    var proxyBody = {
-      targetUrl: config.baseUrl + '/v1/chat/completions',
-      apiKey: config.apiKey,
-      body: body
-    };
-    fetch(proxyUrl, {
+    // Direct call to DeepSeek API (supports CORS)
+    var apiUrl = config.baseUrl + '/v1/chat/completions';
+    fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + config.apiKey
       },
-      body: JSON.stringify(proxyBody)
+      body: JSON.stringify(body)
     }).then(function(resp) {
       return resp.text().then(function(txt) {
         if (!resp.ok) {
@@ -2338,21 +2334,38 @@ var App = {
 
   renderAIConfigForm: function() {
     var config = App.getAIConfig();
+    // Check if API key was passed via URL param (for sharing)
+    var urlKey = '';
+    try {
+      var params = new URLSearchParams(window.location.search);
+      urlKey = params.get('key') || '';
+      if (urlKey) config.apiKey = urlKey;
+    } catch(e) {}
+    
     return '<div class="ai-config">' +
       '<h3 style="margin-bottom:12px;">⚙️ AI 配置（仅存本地）</h3>' +
-      '<p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">首次使用需要配置 AI API。推荐 <strong>DeepSeek</strong>（国内速度快，注册送免费额度）。</p>' +
+      '<p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">首次使用需要配置 AI API。推荐 <strong>DeepSeek</strong>。</p>' +
+      '<button class="btn btn-outline btn-small" id="aiFillDefaultBtn" style="margin-bottom:14px;">⚡ 一键填充 DeepSeek 默认配置</button>' +
       '<div style="margin-bottom:10px;"><label>API Base URL</label>' +
       '<input type="text" id="aiBaseUrl" value="' + escapeHTML(config.baseUrl) + '" placeholder="https://api.deepseek.com"></div>' +
       '<div style="margin-bottom:10px;"><label>API Key</label>' +
       '<input type="text" id="aiApiKey" value="' + escapeHTML(config.apiKey) + '" placeholder="sk-..."></div>' +
       '<div style="margin-bottom:10px;"><label>模型名称</label>' +
       '<input type="text" id="aiModel" value="' + escapeHTML(config.model) + '" placeholder="deepseek-v4-flash"></div>' +
-      '<p class="config-hint">📌 DeepSeek 注册：platform.deepseek.com → API Keys<br>📌 也支持 OpenAI / 月之暗面 / 其他兼容接口<br>🔒 Key 仅存在你的浏览器中，不会上传</p>' +
+      '<p class="config-hint">📌 获取 Key：注册 platform.deepseek.com → 充值10元 → 创建 API Key<br>📌 也支持月之暗面 Kimi / 其他 OpenAI 兼容接口<br>🔒 Key 仅存在你的浏览器中，不会上传，隐私安全</p>' +
       '<button class="btn btn-primary btn-small" id="aiSaveBtn" style="margin-top:8px;">保存并开始分析</button>' +
       '</div>';
   },
 
   bindAIConfigForm: function() {
+    // Fill default DeepSeek config
+    document.getElementById('aiFillDefaultBtn').addEventListener('click', function() {
+      document.getElementById('aiBaseUrl').value = 'https://api.deepseek.com';
+      document.getElementById('aiModel').value = 'deepseek-v4-flash';
+      showToast('已填充默认配置，请输入 API Key', 'info');
+      document.getElementById('aiApiKey').focus();
+    });
+    
     document.getElementById('aiSaveBtn').addEventListener('click', function() {
       var baseUrl = document.getElementById('aiBaseUrl').value.trim().replace(/\/+$/, '');
       var apiKey = document.getElementById('aiApiKey').value.trim();
@@ -2361,6 +2374,10 @@ var App = {
       localStorage.setItem('muxing-ai-base', baseUrl || 'https://api.deepseek.com');
       localStorage.setItem('muxing-ai-key', apiKey);
       localStorage.setItem('muxing-ai-model', model || 'deepseek-v4-flash');
+      // Clear URL key param after saving
+      if (window.location.search) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
       showToast('配置已保存', 'success');
       // Re-trigger analysis
       var btn = document.getElementById('aiDeepBtn');
