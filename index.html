@@ -2426,17 +2426,10 @@ var App = {
 
   renderAIConfigForm: function() {
     var config = App.getAIConfig();
-    // Check if API key was passed via URL param (for sharing)
-    var urlKey = '';
-    try {
-      var params = new URLSearchParams(window.location.search);
-      urlKey = params.get('key') || '';
-      if (urlKey) config.apiKey = urlKey;
-    } catch(e) {}
     
     return '<div class="ai-config">' +
       '<h3 style="margin-bottom:12px;">⚙️ AI 配置（仅存本地）</h3>' +
-      '<p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">首次使用需要配置 AI API。推荐 <strong>DeepSeek</strong>。</p>' +
+      '<p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:14px;">首次使用需要配置 AI API。推荐 <strong>DeepSeek</strong>。<br>📌 API Key 请向分享者私聊获取。</p>' +
       '<button class="btn btn-outline btn-small" id="aiFillDefaultBtn" style="margin-bottom:14px;">⚡ 一键填充 DeepSeek 默认配置</button>' +
       '<div style="margin-bottom:10px;"><label>API Base URL</label>' +
       '<input type="text" id="aiBaseUrl" value="' + escapeHTML(config.baseUrl) + '" placeholder="https://api.deepseek.com"></div>' +
@@ -2466,10 +2459,6 @@ var App = {
       localStorage.setItem('muxing-ai-base', baseUrl || 'https://api.deepseek.com');
       localStorage.setItem('muxing-ai-key', apiKey);
       localStorage.setItem('muxing-ai-model', model || 'deepseek-v4-flash');
-      // Clear URL key param after saving
-      if (window.location.search) {
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
       showToast('配置已保存', 'success');
       // Re-trigger analysis
       var btn = document.getElementById('aiDeepBtn');
