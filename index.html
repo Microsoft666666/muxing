@@ -3708,34 +3708,16 @@ var App = {
     });
 
     document.getElementById('importHistoryBtn').addEventListener('click', function() {
+      if (!confirm('导入历史数据将覆盖同日期的现有记录，确定继续？')) return;
       var count = 0;
-      var conflicts = 0;
       for (var date in HISTORY_DATA) {
         if (HISTORY_DATA.hasOwnProperty(date)) {
-          if (!self.data[date]) {
-            self.data[date] = HISTORY_DATA[date];
-            count++;
-          } else {
-            // Merge: keep existing, fill missing
-            var existing = self.data[date];
-            var imported = HISTORY_DATA[date];
-            for (var key in imported) {
-              if (imported.hasOwnProperty(key)) {
-                if (!existing[key] || (Array.isArray(existing[key]) && existing[key].length === 0)) {
-                  existing[key] = imported[key];
-                }
-              }
-            }
-            conflicts++;
-          }
+          self.data[date] = HISTORY_DATA[date];
+          count++;
         }
       }
       self.saveData();
-      if (conflicts > 0) {
-        showToast('导入完成：' + count + ' 条新 + ' + conflicts + ' 条合并', 'success');
-      } else {
-        showToast('成功导入 ' + count + ' 条历史记录', 'success');
-      }
+      showToast('成功导入 ' + count + ' 条记录（已覆盖同日期）', 'success');
       self.renderHistory();
     });
 
