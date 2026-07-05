@@ -1235,6 +1235,15 @@ textarea::placeholder {
 
   <!-- Tab 1: 今日复盘 -->
   <section class="tab-panel active" id="panel-review">
+    <!-- 日期选择 -->
+    <div class="card" style="padding:12px 16px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <label style="margin:0;font-weight:600;">📅 复盘日期</label>
+        <input type="date" id="reviewDate" style="flex:1;min-width:140px;padding:6px 10px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:0.85rem;">
+        <button class="btn btn-outline btn-small" id="todayJumpBtn">今天</button>
+      </div>
+    </div>
+
     <!-- 今日完成 -->
     <div class="card">
       <div class="card-title">✅ 今日完成 <span class="required-star">*</span></div>
@@ -1315,6 +1324,14 @@ textarea::placeholder {
     </div>
 
     <button class="btn btn-primary btn-save" id="saveTodayBtn">💾 保存今日</button>
+
+    <!-- 每日之镜 -->
+    <div class="card" style="margin-top:16px;border:1px solid rgba(108,92,231,0.3);">
+      <div class="card-title" style="color:#a29bfe;">🪞 每日之镜</div>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;">基于今天的记录，生成一个简短的 AI 观照。</p>
+      <button class="btn-ai" id="dailyMirrorBtn" style="margin-bottom:12px;">🪞 生成每日之镜</button>
+      <div id="dailyMirrorResult"></div>
+    </div>
   </section>
 
   <!-- Tab 2: 明日计划 -->
@@ -1641,6 +1658,7 @@ function showToast(message, type) {
 var App = {
   data: {},
   today: getDateString(),
+  selectedDate: getDateString(),
 
   /* --- Data Operations --- */
   loadData: function() {
@@ -1663,33 +1681,31 @@ var App = {
   },
 
   getTodayData: function() {
-    if (!this.data[this.today]) {
-      // 尝试从昨天的明日计划中继承任务
+    var dateKey = this.selectedDate || this.today;
+    if (!this.data[dateKey]) {
+      // 尝试从前一天的明日计划中继承任务
       var inheritedTasks = [];
-      var hasYesterdayPlan = false;
-      var yesterday = getYesterdayDate();
-      var yesterdayData = this.data[yesterday];
-      if (yesterdayData) {
-        // 继承核心 3 件事
-        if (yesterdayData.tomorrowTop3) {
-          yesterdayData.tomorrowTop3.forEach(function(item) {
+      var prevDate = new Date(dateKey);
+      prevDate.setDate(prevDate.getDate() - 1);
+      var prevDateStr = getDateString(prevDate);
+      var prevData = this.data[prevDateStr];
+      if (prevData) {
+        if (prevData.tomorrowTop3) {
+          prevData.tomorrowTop3.forEach(function(item) {
             if (item && item.trim()) {
               inheritedTasks.push({ text: item.trim(), done: false });
-              hasYesterdayPlan = true;
             }
           });
         }
-        // 继承其他待办
-        if (yesterdayData.tomorrowOthers) {
-          yesterdayData.tomorrowOthers.forEach(function(item) {
+        if (prevData.tomorrowOthers) {
+          prevData.tomorrowOthers.forEach(function(item) {
             if (item && item.trim()) {
               inheritedTasks.push({ text: item.trim(), done: false });
-              hasYesterdayPlan = true;
             }
           });
         }
       }
-      this.data[this.today] = {
+      this.data[dateKey] = {
         mood: '',
         tasks: inheritedTasks,
         bestThing: '',
@@ -1706,7 +1722,7 @@ var App = {
         reflectionThought: ''
       };
     }
-    return this.data[this.today];
+    return this.data[dateKey];
   },
 
   /* --- Tab Switching --- */
@@ -1733,25 +1749,32 @@ var App = {
 
   /* --- Review Tab --- */
   renderReview: function() {
+    // Update date picker
+    var dateInput = document.getElementById('reviewDate');
+    if (dateInput) dateInput.value = this.selectedDate;
+    
     var d = this.getTodayData();
     // Tasks
     this.renderTaskList(d);
     // Task hint - show source of inherited tasks
     var hint = document.getElementById('taskHint');
-    var yesterday = getYesterdayDate();
-    var yesterdayData = this.data[yesterday];
-    var hasYesterdayContent = yesterdayData && (
-      (yesterdayData.tomorrowTop3 && yesterdayData.tomorrowTop3.some(function(x){return x && x.trim();})) ||
-      (yesterdayData.tomorrowOthers && yesterdayData.tomorrowOthers.some(function(x){return x && x.trim();}))
+    var dateKey = this.selectedDate || this.today;
+    var prevDate = new Date(dateKey);
+    prevDate.setDate(prevDate.getDate() - 1);
+    var prevDateStr = getDateString(prevDate);
+    var prevData = this.data[prevDateStr];
+    var hasPrevContent = prevData && (
+      (prevData.tomorrowTop3 && prevData.tomorrowTop3.some(function(x){return x && x.trim();})) ||
+      (prevData.tomorrowOthers && prevData.tomorrowOthers.some(function(x){return x && x.trim();}))
     );
-    if (hasYesterdayContent) {
+    if (hasPrevContent) {
       hint.style.display = 'block';
       hint.style.color = 'var(--info)';
-      hint.innerHTML = '📋 以上任务来自昨天的「明日计划」，完成后打勾 ✓';
+      hint.innerHTML = '📋 以上任务来自 ' + prevDateStr + ' 的「明日计划」，完成后打勾 ✓';
     } else {
       hint.style.display = 'block';
       hint.style.color = 'var(--text-muted)';
-      hint.innerHTML = '💤 昨天没有写明日计划，请在下方添加今日完成的事项';
+      hint.innerHTML = '💤 前一天没有写明日计划，请在下方添加完成的事项';
     }
     // Mood
     var moodBtns = document.querySelectorAll('#moodGrid .mood-btn');
@@ -2398,7 +2421,13 @@ var App = {
       if (!content) throw new Error('返回内容为空，可能模型不可用：' + (config.model || 'deepseek-v4-flash'));
       // Simple markdown to HTML
       var html = App.markdownToHTML(content);
-      container.innerHTML = '<div class="ai-result">' + html + '</div>';
+      var reportTitle = title + ' · 高我深读 · ' + subtitle;
+      var exportHtml = '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<button class="btn btn-outline btn-small" onclick="App.exportAIReport(\'pdf\', this)" data-content="' + encodeURIComponent(content) + '" data-title="' + encodeURIComponent(reportTitle) + '">📄 导出 PDF</button>' +
+        '<button class="btn btn-outline btn-small" onclick="App.exportAIReport(\'docx\', this)" data-content="' + encodeURIComponent(content) + '" data-title="' + encodeURIComponent(reportTitle) + '">📄 导出 DOCX</button>' +
+        '<button class="btn btn-outline btn-small" onclick="App.exportAIReport(\'md\', this)" data-content="' + encodeURIComponent(content) + '" data-title="' + encodeURIComponent(reportTitle) + '">📝 导出 Markdown</button>' +
+        '</div>';
+      container.innerHTML = '<div class="ai-result">' + html + '</div>' + exportHtml;
       btn.disabled = false;
       btn.textContent = '🧠 重新深读';
     }).catch(function(err) {
@@ -2580,6 +2609,154 @@ var App = {
     }
     if (inList) html += '</ul>';
     return html;
+  },
+
+  /* --- Export AI Report --- */
+  exportAIReport: function(format, btn) {
+    var content = decodeURIComponent(btn.getAttribute('data-content'));
+    var title = decodeURIComponent(btn.getAttribute('data-title'));
+    var ts = getDateString(new Date());
+
+    if (format === 'md') {
+      var md = '# ' + title + '\n\n> 生成时间：' + new Date().toLocaleString() + '\n\n---\n\n' + content;
+      this.downloadText(md, 'muxing-ai-report-' + ts + '.md');
+      showToast('Markdown 已导出', 'success');
+    } else if (format === 'pdf') {
+      // Build HTML for PDF
+      var body = '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:680px;margin:0 auto;padding:40px 20px;color:#222;line-height:1.8;">';
+      body += '<h1 style="color:#1a1a2e;border-bottom:2px solid #e94560;padding-bottom:10px;">🌙 ' + escapeHTML(title) + '</h1>';
+      body += '<p style="color:#888;font-size:0.85rem;">生成时间：' + new Date().toLocaleString() + '</p>';
+      body += '<hr style="border:none;border-top:1px solid #eee;margin:20px 0;">';
+      body += this.markdownToHTML(content);
+      body += '</div>';
+      var fullHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + escapeHTML(title) + '</title></head><body>' + body + '</body></html>';
+      // Use print to PDF
+      var w = window.open('', '_blank');
+      w.document.write(fullHtml);
+      w.document.close();
+      setTimeout(function() { w.print(); }, 500);
+      showToast('PDF 打印窗口已打开', 'success');
+    } else if (format === 'docx') {
+      // Generate a simple .doc file (Word compatible HTML)
+      var docBody = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
+      docBody += '<head><meta charset="UTF-8"><title>' + escapeHTML(title) + '</title>';
+      docBody += '<style>body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;font-size:12pt;line-height:1.8;color:#222;}';
+      docBody += 'h1{color:#1a1a2e;font-size:18pt;border-bottom:2px solid #e94560;padding-bottom:8pt;}';
+      docBody += 'h4{color:#6c5ce7;font-size:14pt;margin-top:16pt;}';
+      docBody += 'p{margin:6pt 0;}</style></head><body>';
+      docBody += '<h1>🌙 ' + escapeHTML(title) + '</h1>';
+      docBody += '<p style="color:#888;font-size:10pt;">生成时间：' + new Date().toLocaleString() + '</p><hr>';
+      // Convert markdown to simple HTML
+      var mdHtml = content
+        .replace(/### (.+)/g, '<h4>$1</h4>')
+        .replace(/## (.+)/g, '<h4>$1</h4>')
+        .replace(/# (.+)/g, '<h4>$1</h4>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>');
+      docBody += '<p>' + mdHtml + '</p>';
+      docBody += '</body></html>';
+      var blob = new Blob(['\ufeff' + docBody], { type: 'application/msword' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'muxing-ai-report-' + ts + '.doc';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('DOCX 已导出', 'success');
+    }
+  },
+
+  /* --- Daily Mirror --- */
+  generateDailyMirror: function() {
+    var container = document.getElementById('dailyMirrorResult');
+    var btn = document.getElementById('dailyMirrorBtn');
+    var config = App.getAIConfig();
+    
+    if (!config.apiKey) {
+      container.innerHTML = App.renderAIConfigForm();
+      App.bindAIConfigForm();
+      return;
+    }
+
+    var d = this.getTodayData();
+    // Build today's record text
+    var lines = [];
+    lines.push('日期：' + (this.selectedDate || this.today));
+    if (d.mood) lines.push('心情：' + d.mood);
+    if (d.tasks && d.tasks.length > 0) {
+      lines.push('完成事项：');
+      d.tasks.forEach(function(t) { lines.push('  ' + (t.done ? '✓' : '○') + ' ' + t.text); });
+    }
+    if (d.bestThing) lines.push('亮点：' + d.bestThing);
+    if (d.difficulty) lines.push('困难：' + d.difficulty);
+    if (d.learning) lines.push('学习：' + d.learning);
+    if (d.redoDifferently) lines.push('反思：' + d.redoDifferently);
+    if (d.efficiency) lines.push('效率：' + d.efficiency + '/5');
+    if (d.rest) lines.push('休息：' + d.rest + '/5');
+    if (d.reflectionFeeling) lines.push('修行感悟：' + d.reflectionFeeling);
+    if (d.reflectionConfusion) lines.push('情绪困惑：' + d.reflectionConfusion);
+    if (d.reflectionThought) lines.push('念头观察：' + d.reflectionThought);
+    if (d.tomorrowTop3 && d.tomorrowTop3.some(function(x){return x;})) {
+      lines.push('明日计划：');
+      d.tomorrowTop3.forEach(function(item, i) { if (item) lines.push('  ' + (i+1) + '. ' + item); });
+    }
+    var todayText = lines.join('\n');
+
+    var systemPrompt = '你是"暮省"的每日之镜。你的任务不是诊断、治疗、评判、预测或替用户做决定，而是基于用户今天的记录，给出一个简短、温和、有观照感的回应。\n\n请固定输出 3 个部分：\n\n## 今日照见\n指出今天最值得用户看见的一点。要具体、温和、简短。\n\n## 一个小惯性\n指出今天可能出现的一个轻微反应惯性。请使用"可能""也许""似乎""可以轻轻看见"等不绝对的表达。不要下结论，不要诊断，不要批判。\n\n## 明日一小步\n给出明天一个很小、具体、可执行的调整。这个行动应该简单到用户愿意做，最好在 1-5 分钟内可以完成。\n\n重要边界：\n- 不要诊断用户有任何心理问题\n- 不要使用心理治疗语言\n- 不要评价用户修行好坏\n- 不要说教\n- 不要道德审判\n- 不要使用玄学、命运、因果、宇宙、业力等表达\n- 不要输出长篇分析\n- 不要替用户做重大决定\n- 不要使用"你必须""你应该立刻"等强迫性语言\n- 可以使用"也许""你可以轻轻看见""明天可以尝试"等温和表达\n\n输出要简洁、有温度、有观照感。用中文回复。';
+
+    btn.disabled = true;
+    btn.textContent = '🪞 照见中...';
+    container.innerHTML = '<div class="ai-loading"><div class="spinner"></div><br>轻轻照见今天...</div>';
+
+    var body = {
+      model: config.model || 'deepseek-v4-flash',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: todayText }
+      ],
+      temperature: 0.85,
+      max_tokens: 1500
+    };
+
+    fetch(config.baseUrl + '/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + config.apiKey },
+      body: JSON.stringify(body)
+    }).then(function(resp) {
+      return resp.text().then(function(txt) {
+        if (!resp.ok) {
+          var lowerTxt = txt.toLowerCase();
+          var tip = '';
+          if (resp.status === 401 || lowerTxt.indexOf('authentication') >= 0) tip = '🔑 API Key 无效';
+          else if (lowerTxt.indexOf('insufficient balance') >= 0) tip = '💰 账户余额不足';
+          else tip = 'HTTP ' + resp.status;
+          throw new Error(tip);
+        }
+        return JSON.parse(txt);
+      });
+    }).then(function(data) {
+      var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if (!content) throw new Error('返回内容为空');
+      var html = App.markdownToHTML(content);
+      var dateKey = App.selectedDate || App.today;
+      var reportTitle = '每日之镜 · ' + dateKey;
+      var exportHtml = '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<button class="btn btn-outline btn-small" onclick="App.exportAIReport(\'pdf\', this)" data-content="' + encodeURIComponent(content) + '" data-title="' + encodeURIComponent(reportTitle) + '">📄 导出PDF</button>' +
+        '<button class="btn btn-outline btn-small" onclick="App.exportAIReport(\'docx\', this)" data-content="' + encodeURIComponent(content) + '" data-title="' + encodeURIComponent(reportTitle) + '">📄 导出DOCX</button>' +
+        '<button class="btn btn-outline btn-small" onclick="App.exportAIReport(\'md\', this)" data-content="' + encodeURIComponent(content) + '" data-title="' + encodeURIComponent(reportTitle) + '">📝 导出MD</button>' +
+        '</div>';
+      container.innerHTML = '<div class="ai-result">' + html + '</div>' + exportHtml;
+      btn.disabled = false;
+      btn.textContent = '🪞 重新生成';
+    }).catch(function(err) {
+      container.innerHTML = '<div class="ai-result" style="border-color:var(--danger);"><strong>⚠️ 生成失败</strong><br><br>' + escapeHTML(err.message) + '</div>';
+      btn.disabled = false;
+      btn.textContent = '🪞 生成每日之镜';
+    });
   },
 
   /* --- Rule-based Insight Analysis --- */
@@ -3093,6 +3270,12 @@ var App = {
       self.saveData();
     });
 
+    // Daily Mirror
+    document.getElementById('dailyMirrorBtn').addEventListener('click', function() {
+      self.collectReviewData();
+      self.generateDailyMirror();
+    });
+
     // --- Plan Tab Events ---
     document.getElementById('addOtherBtn').addEventListener('click', function() {
       var input = document.getElementById('otherInput');
@@ -3201,13 +3384,32 @@ var App = {
 
     // Reset today
     document.getElementById('resetTodayBtn').addEventListener('click', function() {
-      if (confirm('确定要重置今天的所有复盘数据吗？历史记录不受影响。')) {
-        delete self.data[self.today];
+      var dateKey = self.selectedDate || self.today;
+      if (confirm('确定要重置 ' + dateKey + ' 的所有复盘数据吗？历史记录不受影响。')) {
+        delete self.data[dateKey];
         self.saveData();
         self.renderReview();
-        showToast('今日数据已重置', 'success');
+        showToast(dateKey + ' 数据已重置', 'success');
       }
     });
+
+    // Date picker
+    var reviewDateInput = document.getElementById('reviewDate');
+    if (reviewDateInput) {
+      reviewDateInput.value = self.selectedDate;
+      reviewDateInput.addEventListener('change', function() {
+        self.selectedDate = this.value;
+        self.renderReview();
+      });
+    }
+    var todayJumpBtn = document.getElementById('todayJumpBtn');
+    if (todayJumpBtn) {
+      todayJumpBtn.addEventListener('click', function() {
+        self.selectedDate = self.today;
+        self.renderReview();
+        showToast('已跳转到今天', 'info');
+      });
+    }
 
     // Initial render
     this.renderReview();
