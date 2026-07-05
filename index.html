@@ -2,10 +2,16 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="暮省">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%231a1a2e'/%3E%3Ctext x='96' y='120' font-size='100' text-anchor='middle'%3E🌙%3C/text%3E%3C/svg%3E">
 <title>暮省 · 每日复盘</title>
 <style>
 /* ============================================================
@@ -1167,6 +1173,51 @@ textarea::placeholder {
   to { transform: rotate(360deg); }
 }
 
+/* Voice input */
+.voice-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all var(--transition);
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.voice-btn:hover {
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.voice-btn.recording {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(233,69,96,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(233,69,96,0); }
+}
+
+.voice-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.voice-row textarea,
+.voice-row input[type="text"] {
+  flex: 1;
+}
+
 .ai-config {
   margin-top: 16px;
   background: var(--bg-card);
@@ -1275,28 +1326,40 @@ textarea::placeholder {
     <div class="card">
       <div class="card-title">🌟 亮点</div>
       <label>今天最满意的一件事</label>
-      <textarea id="bestThing" placeholder="写下今天最让你满意的一件事..." maxlength="500"></textarea>
+      <div class="voice-row">
+        <textarea id="bestThing" placeholder="写下今天最让你满意的一件事..." maxlength="500"></textarea>
+        <button class="voice-btn" onclick="App.startVoice('bestThing')" title="语音输入">🎤</button>
+      </div>
     </div>
 
     <!-- 困难 -->
     <div class="card">
       <div class="card-title">🧗 困难</div>
       <label>遇到了什么困难？怎么处理的？</label>
-      <textarea id="difficulty" placeholder="描述遇到的困难和你的应对方式..." maxlength="500"></textarea>
+      <div class="voice-row">
+        <textarea id="difficulty" placeholder="描述遇到的困难和你的应对方式..." maxlength="500"></textarea>
+        <button class="voice-btn" onclick="App.startVoice('difficulty')" title="语音输入">🎤</button>
+      </div>
     </div>
 
     <!-- 学习 -->
     <div class="card">
       <div class="card-title">📖 学习</div>
       <label>今天学到了什么？</label>
-      <textarea id="learning" placeholder="今天学到的新知识、新技能或新感悟..." maxlength="500"></textarea>
+      <div class="voice-row">
+        <textarea id="learning" placeholder="今天学到的新知识、新技能或新感悟..." maxlength="500"></textarea>
+        <button class="voice-btn" onclick="App.startVoice('learning')" title="语音输入">🎤</button>
+      </div>
     </div>
 
     <!-- 反思 -->
     <div class="card">
       <div class="card-title">🔄 反思 <span class="required-star" style="color: var(--primary);">*</span></div>
       <label><span class="required">*</span> 如果重来，会怎么做不同？</label>
-      <textarea id="redoDifferently" placeholder="认真思考：如果今天重新来过，哪些事情你会做得不同？" maxlength="500"></textarea>
+      <div class="voice-row">
+        <textarea id="redoDifferently" placeholder="认真思考：如果今天重新来过，哪些事情你会做得不同？" maxlength="500"></textarea>
+        <button class="voice-btn" onclick="App.startVoice('redoDifferently')" title="语音输入">🎤</button>
+      </div>
     </div>
 
     <!-- 效率评分 -->
@@ -1356,7 +1419,10 @@ textarea::placeholder {
 
     <div class="card">
       <div class="card-title">⏰ 提醒</div>
-      <textarea id="tomorrowReminder" placeholder="明天的提醒事项或注意事项..." maxlength="300"></textarea>
+      <div class="voice-row">
+        <textarea id="tomorrowReminder" placeholder="明天的提醒事项或注意事项..." maxlength="300"></textarea>
+        <button class="voice-btn" onclick="App.startVoice('tomorrowReminder')" title="语音输入">🎤</button>
+      </div>
     </div>
 
     <button class="btn btn-primary btn-save" id="savePlanBtn">💾 保存</button>
@@ -1377,21 +1443,30 @@ textarea::placeholder {
     <!-- 修行感悟 -->
     <div class="card">
       <div class="card-title">🧘 今日修行感悟</div>
-      <textarea id="reflectionFeeling" placeholder="今天的心得、感受、发生的事件..." maxlength="1000"></textarea>
+      <div class="voice-row">
+        <textarea id="reflectionFeeling" placeholder="今天的心得、感受、发生的事件..." maxlength="1000"></textarea>
+        <button class="voice-btn" onclick="App.startVoice('reflectionFeeling')" title="语音输入">🎤</button>
+      </div>
     </div>
 
     <!-- 情绪困惑 -->
     <div class="card">
       <div class="card-title">💭 情绪困惑</div>
       <label>什么让你动摇？什么念头反复出现？</label>
-      <textarea id="reflectionConfusion" placeholder="坦诚面对自己的内心..." maxlength="500"></textarea>
+      <div class="voice-row">
+        <textarea id="reflectionConfusion" placeholder="坦诚面对自己的内心..." maxlength="500"></textarea>
+        <button class="voice-btn" onclick="App.startVoice('reflectionConfusion')" title="语音输入">🎤</button>
+      </div>
     </div>
 
     <!-- 念头观察 -->
     <div class="card">
       <div class="card-title">👁️ 念头观察</div>
       <label>观察一个具体念头的来龙去脉（选填）</label>
-      <textarea id="reflectionThought" placeholder="像一个旁观者，观察念头的升起、停留和消散..." maxlength="500"></textarea>
+      <div class="voice-row">
+        <textarea id="reflectionThought" placeholder="像一个旁观者，观察念头的升起、停留和消散..." maxlength="500"></textarea>
+        <button class="voice-btn" onclick="App.startVoice('reflectionThought')" title="语音输入">🎤</button>
+      </div>
     </div>
 
     <!-- 修行提醒卡片 -->
@@ -3158,6 +3233,97 @@ var App = {
     } else {
       reminderEl.style.display = 'none';
     }
+  },
+
+  /* --- Voice Input --- */
+  voiceRecognition: null,
+  voiceTargetId: null,
+
+  startVoice: function(targetId) {
+    var target = document.getElementById(targetId);
+    if (!target) return;
+
+    // Check support
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      // Fallback: use mobile keyboard's voice
+      showToast('浏览器不支持语音识别，请长按输入框使用键盘语音', 'error');
+      target.focus();
+      return;
+    }
+
+    // If already recording, stop
+    if (this.voiceRecognition && this.voiceTargetId) {
+      this.voiceRecognition.stop();
+      var prevBtn = document.querySelector('.voice-btn.recording');
+      if (prevBtn) prevBtn.classList.remove('recording');
+      if (this.voiceTargetId === targetId) {
+        this.voiceRecognition = null;
+        this.voiceTargetId = null;
+        return;
+      }
+      this.voiceRecognition = null;
+      this.voiceTargetId = null;
+    }
+
+    // Start new recognition
+    var recognition = new SR();
+    recognition.lang = 'zh-CN';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    var self = this;
+    var btn = target.parentElement.querySelector('.voice-btn');
+    var baseText = target.value;
+    var lastTranscript = '';
+
+    recognition.onstart = function() {
+      if (btn) btn.classList.add('recording');
+      showToast('🎤 正在聆听... 再次点击停止', 'info');
+    };
+
+    recognition.onresult = function(event) {
+      var interim = '';
+      var final = '';
+      for (var i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          final += event.results[i][0].transcript;
+        } else {
+          interim += event.results[i][0].transcript;
+        }
+      }
+      if (final) {
+        baseText += (baseText && !baseText.endsWith('\n') ? '\n' : '') + final;
+        target.value = baseText;
+        lastTranscript = '';
+      } else if (interim) {
+        target.value = baseText + (baseText && !baseText.endsWith('\n') ? '\n' : '') + interim;
+        lastTranscript = interim;
+      }
+    };
+
+    recognition.onerror = function(event) {
+      if (btn) btn.classList.remove('recording');
+      if (event.error === 'no-speech') {
+        showToast('没有检测到语音', 'error');
+      } else if (event.error === 'not-allowed') {
+        showToast('请允许麦克风权限', 'error');
+      } else {
+        showToast('语音识别出错: ' + event.error, 'error');
+      }
+      self.voiceRecognition = null;
+      self.voiceTargetId = null;
+    };
+
+    recognition.onend = function() {
+      if (btn) btn.classList.remove('recording');
+      self.voiceRecognition = null;
+      self.voiceTargetId = null;
+    };
+
+    recognition.start();
+    this.voiceRecognition = recognition;
+    this.voiceTargetId = targetId;
   },
 
   /* --- Initialization --- */
