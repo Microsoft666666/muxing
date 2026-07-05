@@ -1924,7 +1924,6 @@ var App = {
 
   collectReviewData: function() {
     var d = this.getTodayData();
-    d.tasks = d.tasks; // already mutated in place
     d.bestThing = document.getElementById('bestThing').value.trim();
     d.difficulty = document.getElementById('difficulty').value.trim();
     d.learning = document.getElementById('learning').value.trim();
@@ -3342,7 +3341,10 @@ var App = {
       if (!data) { if (callback) callback(false, null); return; }
       self.syncSHA = data.sha;
       try {
-        var decoded = JSON.parse(atob(data.content));
+        var binary = atob(data.content);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        var decoded = JSON.parse(new TextDecoder().decode(bytes));
         var cloudData = decoded.data || {};
         // Merge cloud data into local
         var hasNew = false;
@@ -3372,7 +3374,12 @@ var App = {
 
   pushToCloud: function(token, callback) {
     var self = this;
-    var content = btoa(unescape(encodeURIComponent(JSON.stringify({ version: 1, data: this.data }))));
+    var jsonStr = JSON.stringify({ version: 1, data: this.data });
+    // UTF-8 safe base64 encoding
+    var bytes = new TextEncoder().encode(jsonStr);
+    var binary = '';
+    for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    var content = btoa(binary);
     var body = {
       message: '暮省同步 ' + new Date().toLocaleString(),
       content: content
@@ -3513,8 +3520,8 @@ var App = {
     // Load data
     this.loadData();
 
-    // Auto pull from cloud
-    this.autoPull();
+    // Auto pull from cloud (disabled to prevent data overwrite)
+    // this.autoPull();
 
     // Nickname
     var nickname = localStorage.getItem('muxing-nickname');
