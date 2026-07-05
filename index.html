@@ -1494,6 +1494,7 @@ textarea::placeholder {
       <button class="btn btn-secondary btn-small" id="importBtn">📂 导入 JSON</button>
       <button class="btn btn-secondary btn-small" id="exportMdBtn">📝 导出 Markdown</button>
       <button class="btn btn-primary btn-small" id="importHistoryBtn">📥 导入历史数据</button>
+      <button class="btn btn-secondary btn-small" id="cloudSyncBtn">☁️ 云同步</button>
       <input type="file" id="importFileInput" accept=".json" style="display:none;">
     </div>
 
@@ -1750,6 +1751,7 @@ var App = {
     try {
       localStorage.setItem('daily-review-data', JSON.stringify(this.data));
       showToast('✅ 已保存', 'success');
+      this.autoSync();
     } catch (e) {
       showToast('保存失败，请检查存储空间', 'error');
     }
@@ -3235,6 +3237,184 @@ var App = {
     }
   },
 
+  /* --- Cloud Sync (GitHub Private Repo) --- */
+  SYNC_REPO: 'Microsoft666666/muxing-sync',
+  SYNC_FILE: 'sync-data.json',
+  syncSHA: null,
+
+  getSyncToken: function() {
+    return localStorage.getItem('muxing-sync-token') || '';
+  },
+
+  cloudSync: function() {
+    var token = this.getSyncToken();
+    if (!token) {
+      this.showSyncConfig();
+      return;
+    }
+    this.doSync(token);
+  },
+
+  showSyncConfig: function() {
+    var modal = document.getElementById('reportOverlay');
+    var modalContent = document.getElementById('reportModal');
+    var existingToken = this.getSyncToken();
+    modalContent.innerHTML = '<div class="report-header"><div><h2>☁️ 云同步设置</h2></div><button class="report-close" id="syncCloseBtn">×</button></div>' +
+      '<div class="ai-config">' +
+      '<p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:14px;">使用 GitHub 私有仓库自动同步数据，手机和电脑无缝同步。<br>🔒 数据存在你自己的私有仓库里，只有你能看到。</p>' +
+      '<div style="margin-bottom:10px;"><label>GitHub Token（需要 repo 权限）</label>' +
+      '<input type="text" id="syncTokenInput" value="' + escapeHTML(existingToken) + '" placeholder="ghp_..." style="font-size:0.82rem;"></div>' +
+      '<p class="config-hint">📌 获取 Token：github.com/settings/tokens/new → 勾选 repo → 生成<br>🔒 Token 仅存在你的浏览器中</p>' +
+      '<div style="display:flex;gap:8px;margin-top:12px;">' +
+      '<button class="btn btn-primary btn-small" id="syncSaveBtn">保存并立即同步</button>' +
+      '<button class="btn btn-outline btn-small" id="syncPullBtn">仅拉取云端数据</button>' +
+      '<button class="btn btn-outline btn-small" id="syncPushBtn">仅推送本地数据</button>' +
+      '</div>' +
+      '<div id="syncStatus" style="margin-top:14px;font-size:0.82rem;"></div>' +
+      '</div>';
+    modal.classList.add('active');
+    document.getElementById('syncCloseBtn').addEventListener('click', function() { modal.classList.remove('active'); });
+    var self = this;
+    document.getElementById('syncSaveBtn').addEventListener('click', function() {
+      var t = document.getElementById('syncTokenInput').value.trim();
+      if (!t) { showToast('请输入 Token', 'error'); return; }
+      localStorage.setItem('muxing-sync-token', t);
+      self.doSync(t);
+    });
+    document.getElementById('syncPullBtn').addEventListener('click', function() {
+      var t = document.getElementById('syncTokenInput').value.trim() || self.getSyncToken();
+      if (!t) { showToast('请先保存 Token', 'error'); return; }
+      self.pullFromCloud(t);
+    });
+    document.getElementById('syncPushBtn').addEventListener('click', function() {
+      var t = document.getElementById('syncTokenInput').value.trim() || self.getSyncToken();
+      if (!t) { showToast('请先保存 Token', 'error'); return; }
+      self.pushToCloud(t);
+    });
+  },
+
+  doSync: function(token) {
+    var self = this;
+    var status = document.getElementById('syncStatus');
+    if (status) status.innerHTML = '<span style="color:var(--info);">⏳ 正在同步...</span>';
+    // First pull cloud data
+    this.pullFromCloud(token, function(success, cloudData) {
+      if (success && cloudData) {
+        // Merge: cloud data into local (cloud is source of truth, but keep local-only dates)
+        var hasNew = false;
+        for (var date in cloudData) {
+          if (cloudData.hasOwnProperty(date) && !self.data[date]) {
+            self.data[date] = cloudData[date];
+            hasNew = true;
+          }
+        }
+        if (hasNew) {
+          self.saveData();
+          self.renderHistory();
+        }
+      }
+      // Then push merged data back to cloud
+      self.pushToCloud(token, function(pushSuccess) {
+        if (status) {
+          if (pushSuccess) {
+            status.innerHTML = '<span style="color:var(--success);">✅ 同步完成！手机和电脑数据已同步。</span>';
+          } else {
+            status.innerHTML = '<span style="color:var(--warning);">⚠️ 拉取成功，推送失败，请重试。</span>';
+          }
+        }
+      });
+    });
+  },
+
+  pullFromCloud: function(token, callback) {
+    var self = this;
+    fetch('https://api.github.com/repos/' + this.SYNC_REPO + '/contents/' + this.SYNC_FILE, {
+      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+    }).then(function(resp) {
+      if (resp.status === 404) {
+        // File doesn't exist yet, nothing to pull
+        if (callback) callback(false, null);
+        return null;
+      }
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      return resp.json();
+    }).then(function(data) {
+      if (!data) { if (callback) callback(false, null); return; }
+      self.syncSHA = data.sha;
+      try {
+        var decoded = JSON.parse(atob(data.content));
+        var cloudData = decoded.data || {};
+        // Merge cloud data into local
+        var hasNew = false;
+        for (var date in cloudData) {
+          if (cloudData.hasOwnProperty(date) && !self.data[date]) {
+            self.data[date] = cloudData[date];
+            hasNew = true;
+          }
+        }
+        if (hasNew) {
+          self.saveData();
+          self.renderHistory();
+          showToast('☁️ 已从云端拉取新数据', 'success');
+        } else {
+          showToast('☁️ 云端数据已是最新', 'info');
+        }
+        if (callback) callback(true, cloudData);
+      } catch(e) {
+        showToast('云端数据解析失败', 'error');
+        if (callback) callback(false, null);
+      }
+    }).catch(function(err) {
+      showToast('拉取失败: ' + err.message, 'error');
+      if (callback) callback(false, null);
+    });
+  },
+
+  pushToCloud: function(token, callback) {
+    var self = this;
+    var content = btoa(unescape(encodeURIComponent(JSON.stringify({ version: 1, data: this.data }))));
+    var body = {
+      message: '暮省同步 ' + new Date().toLocaleString(),
+      content: content
+    };
+    if (this.syncSHA) body.sha = this.syncSHA;
+
+    fetch('https://api.github.com/repos/' + this.SYNC_REPO + '/contents/' + this.SYNC_FILE, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+      body: JSON.stringify(body)
+    }).then(function(resp) {
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      return resp.json();
+    }).then(function(data) {
+      self.syncSHA = data.content.sha;
+      showToast('☁️ 已推送到云端', 'success');
+      if (callback) callback(true);
+    }).catch(function(err) {
+      showToast('推送失败: ' + err.message, 'error');
+      if (callback) callback(false);
+    });
+  },
+
+  // Auto sync on save
+  autoSync: function() {
+    var token = this.getSyncToken();
+    if (!token) return; // No token, skip
+    this.pushToCloud(token);
+  },
+
+  // Auto pull on load
+  autoPull: function() {
+    var token = this.getSyncToken();
+    if (!token) return;
+    var self = this;
+    this.pullFromCloud(token, function(success, cloudData) {
+      if (success && cloudData) {
+        self.renderReview();
+      }
+    });
+  },
+
   /* --- Voice Input --- */
   voiceRecognition: null,
   voiceTargetId: null,
@@ -3332,6 +3512,9 @@ var App = {
 
     // Load data
     this.loadData();
+
+    // Auto pull from cloud
+    this.autoPull();
 
     // Nickname
     var nickname = localStorage.getItem('muxing-nickname');
@@ -3546,6 +3729,11 @@ var App = {
         showToast('成功导入 ' + count + ' 条历史记录', 'success');
       }
       self.renderHistory();
+    });
+
+    // Cloud sync
+    document.getElementById('cloudSyncBtn').addEventListener('click', function() {
+      self.cloudSync();
     });
 
     // Reset today
