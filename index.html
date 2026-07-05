@@ -1495,6 +1495,7 @@ textarea::placeholder {
       <button class="btn btn-secondary btn-small" id="exportMdBtn">📝 导出 Markdown</button>
       <button class="btn btn-primary btn-small" id="importHistoryBtn">📥 导入历史数据</button>
       <button class="btn btn-secondary btn-small" id="cloudSyncBtn">☁️ 云同步</button>
+      <button class="btn btn-secondary btn-small" id="cloudRestoreBtn">♻️ 从云端恢复</button>
       <input type="file" id="importFileInput" accept=".json" style="display:none;">
     </div>
 
@@ -3741,6 +3742,43 @@ var App = {
     // Cloud sync
     document.getElementById('cloudSyncBtn').addEventListener('click', function() {
       self.cloudSync();
+    });
+
+    // Cloud restore - one click recovery
+    document.getElementById('cloudRestoreBtn').addEventListener('click', function() {
+      var token = self.getSyncToken();
+      if (!token) {
+        showToast('请先在「☁️ 云同步」中配置 Token', 'error');
+        return;
+      }
+      if (!confirm('从云端恢复数据？这将用云端数据覆盖本地数据。')) return;
+      fetch('https://api.github.com/repos/' + self.SYNC_REPO + '/contents/' + self.SYNC_FILE, {
+        headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+      }).then(function(resp) {
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        return resp.json();
+      }).then(function(d) {
+        self.syncSHA = d.sha;
+        var binary = atob(d.content);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        var decoded = JSON.parse(new TextDecoder().decode(bytes));
+        var cloudData = decoded.data || {};
+        // Clean: only keep date keys
+        var cleanData = {};
+        for (var k in cloudData) {
+          if (cloudData.hasOwnProperty(k) && /^\d{4}-\d{2}-\d{2}$/.test(k) && typeof cloudData[k] === 'object') {
+            cleanData[k] = cloudData[k];
+          }
+        }
+        self.data = cleanData;
+        localStorage.setItem('daily-review-data', JSON.stringify(self.data));
+        self.renderReview();
+        self.renderHistory();
+        showToast('✅ 已从云端恢复 ' + Object.keys(cleanData).length + ' 天记录', 'success');
+      }).catch(function(err) {
+        showToast('恢复失败: ' + err.message, 'error');
+      });
     });
 
     // Reset today
