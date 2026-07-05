@@ -1,6 +1,6 @@
 {
   "name": "暮省 · 每日复盘",
-  "short_name": "暮省",
+  "short_name": "省",
   "description": "睡前5分钟，照见自己。每日复盘、明日计划、修行反思、AI高我深读。",
   "start_url": "./",
   "display": "standalone",
